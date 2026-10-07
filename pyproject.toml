@@ -72,6 +72,7 @@ Documentation = "https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysi
 "Bug Tracker" = "https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics/issues"
 "Public Issues" = "https://github.com/sAmplitudes/sphysics/issues"
 Changelog = "https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics/releases"
+DOI = "https://doi.org/10.5281/zenodo.23214121"
 
 
 [tool.scikit-build]

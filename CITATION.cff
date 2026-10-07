@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: If you use sphysics, please cite it using the metadata from this file.
+type: software
+title: sphysics
+abstract: Tools for amplitude analysis, event selection, kinematic calculations, machine learning, and more
+authors:
+  - family-names: Wallner
+    given-names: Stefan
+    orcid: https://orcid.org/0000-0002-9105-1625
+doi: 10.5281/zenodo.23214121
+repository-code: https://github.com/sAmplitudes/sphysics
+url: https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics
+license: GPL-3.0-or-later
+keywords:
+  - amplitude analyses
+  - PWA
+  - partial-wave analyses
+  - particle physics

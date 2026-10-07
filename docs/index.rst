@@ -11,6 +11,8 @@ For instructions on how to install sphysics, please refer to :ref:`Using sphysic
 Details on how to contribute to the project are available under :ref:`Contributing <contributing>`.
 Some important conventions used in sphysics are defined in :ref:`Conventions <conventions>`.
 
+If you use sphysics, please cite it using its DOI `10.5281/zenodo.23214121 <https://doi.org/10.5281/zenodo.23214121>`_, which refers to all versions; the DOIs of the individual versions are listed on Zenodo.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

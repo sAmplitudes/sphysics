@@ -1,5 +1,7 @@
 # sphysics
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23214121.svg)](https://doi.org/10.5281/zenodo.23214121)
+
 sphysics provides tools designed for amplitude analysis, event selection, kinematic calculations, machine learning, and more.
 
 The documentation for sphysics can be accessed on [GitLab Pages](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics)
@@ -7,6 +9,11 @@ The documentation for sphysics can be accessed on [GitLab Pages](https://belle2.
 Information on how to install and use sphysics can be found in the [Getting Started page](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics/gettingstarted.html)
 
 If you want to contribute to sphysics, please see the [Contributing page](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics/contributing.html)
+
+## Citing sphysics
+
+If you use sphysics, please cite it using its DOI [10.5281/zenodo.23214121](https://doi.org/10.5281/zenodo.23214121), which refers to all versions; the DOIs of the individual versions are listed on Zenodo.
+The citation metadata are also available in [CITATION.cff](CITATION.cff).
 
 ## License
 
