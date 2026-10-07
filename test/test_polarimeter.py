@@ -59,7 +59,8 @@ class PolarimeterTest(unittest.TestCase):
 		'''Generate tau+ tau- -> pi(pi0) nu pairs at rest in the e+e- CMS, where the e+ is along +z, and boost the
 		event along +z into a Belle II like lab frame.
 
-		:return: The sample in the lab frame and the expected polarimeter vectors of shape ``(4, nEvents)`` in the nrk frame
+		:return: The sample and the positron 4-momentum in the lab frame and the expected polarimeter vectors of shape
+		         ``(4, nEvents)`` in the nrk frame
 		'''
 		pTau_pos, pTau_neg = sphysics.generators.twoBodyDecay(np.full(nEvents, C.M.upsilon_4S_0), C.M.tau, C.M.tau)
 		pTauRest = np.zeros((4, nEvents))
@@ -76,6 +77,8 @@ class PolarimeterTest(unittest.TestCase):
 		betaGammaLab = 0.28
 		pLab = np.tile(np.array([C.M.upsilon_4S_0*np.sqrt(1. + betaGammaLab**2), 0., 0., C.M.upsilon_4S_0*betaGammaLab]).reshape(4, 1), (1, nEvents))
 		boostLab = lorentz.getBoostFromRestFrame(pLab)
+		pPositron = np.tile(np.array([C.M.upsilon_4S_0/2., 0., 0., np.sqrt(C.M.upsilon_4S_0**2/4. - C.M.e**2)]).reshape(4, 1), (1, nEvents))
+		pPositron = lorentz.applyBoost(boostLab, pPositron)
 
 		sample = sphysics.eventselection.Variables()
 		expectedH = {}
@@ -101,28 +104,28 @@ class PolarimeterTest(unittest.TestCase):
 				sample.addVariable(name, auto=False, is4Momentum=True)
 				sample[name] = lorentz.applyBoost(boostLab, p)
 
-		return sample, expectedH
+		return sample, pPositron, expectedH
 
 
-	def _checkFanoCoeffsFrame(self, calculateFanoCoeffs, withPi0):
-		'''Check the polarimeter vectors that are stored in the sample against the expected ones in the nrk frame and
-		check that the returned Fano coefficients are the projections of these polarimeter vectors.'''
-		sample, expectedH = self._generateTauPairSample(10_000, withPi0)
+	def _checkFanoCoeffsFrame(self, calculatePolarimeterVectors, calculateFanoCoeffs, withPi0):
+		'''Check the polarimeter vectors against the expected ones in the nrk frame and check that the returned Fano
+		coefficients and their uncertainties are the projections of these polarimeter vectors.'''
+		sample, pPositron, expectedH = self._generateTauPairSample(10_000, withPi0)
 
-		b_pos, b_neg, c_ij, unc = calculateFanoCoeffs(sample)
+		h_pos, h_neg = calculatePolarimeterVectors(sample, pPositron)
 
-		for charge in ('pos', 'neg'):
-			h = sample[f'h_{charge}']
+		for charge, h in (('pos', h_pos), ('neg', h_neg)):
 			self.assertEqual(h.shape, (4, sample.nEvents))
 			self.assertAlmostEqual(np.max(np.abs(h[0])), 0., 8)
 			self.assertAlmostEqual(np.max(np.abs(np.sum(h[1:]**2, axis=0) - 1.)), 0., 8)
 			self.assertAlmostEqual(np.max(np.abs(h - expectedH[charge])), 0., 8)
 
-		b_posRef, b_negRef, c_ijRef, uncRef = taupair.calculateFanoCoeffsProjection(expectedH['pos'], expectedH['neg'])
-		self.assertAlmostEqual(np.max(np.abs(b_pos - b_posRef)), 0., 8)
-		self.assertAlmostEqual(np.max(np.abs(b_neg - b_negRef)), 0., 8)
-		self.assertAlmostEqual(np.max(np.abs(c_ij - c_ijRef)), 0., 8)
-		self.assertAlmostEqual(np.max(np.abs(unc - uncRef)), 0., 8)
+		fanoCoeffs = calculateFanoCoeffs(sample, pPositron)
+		fanoCoeffsRef = taupair.calculateFanoCoeffsProjection(expectedH['pos'], expectedH['neg'])
+		self.assertEqual(len(fanoCoeffs), 6)
+		for value, ref in zip(fanoCoeffs, fanoCoeffsRef):
+			self.assertEqual(value.shape, ref.shape)
+			self.assertAlmostEqual(np.max(np.abs(value - ref)), 0., 8)
 
 
 	def test_fanoCoeffsProjectionClosure(self):
@@ -131,16 +134,19 @@ class PolarimeterTest(unittest.TestCase):
 		rng = np.random.default_rng(1234)
 		h_pos, h_neg = _generateSpinCorrelatedPolarimeters(rng, 2_000_000)
 
-		b_pos, b_neg, c_ij, unc = taupair.calculateFanoCoeffsProjection(h_pos, h_neg)
+		b_pos, b_neg, c_ij, b_pos_unc, b_neg_unc, c_ij_unc = taupair.calculateFanoCoeffsProjection(h_pos, h_neg)
 
 		self.assertEqual(b_pos.shape, (3, 1))
 		self.assertEqual(b_neg.shape, (3, 1))
 		self.assertEqual(c_ij.shape, (3, 3))
-		self.assertEqual(unc.shape, (15, 1))
+		self.assertEqual(b_pos_unc.shape, (3, 1))
+		self.assertEqual(b_neg_unc.shape, (3, 1))
+		self.assertEqual(c_ij_unc.shape, (3, 3))
 
 		estimates = np.concatenate((b_pos.ravel(), b_neg.ravel(), c_ij.ravel()))
+		unc = np.concatenate((b_pos_unc.ravel(), b_neg_unc.ravel(), c_ij_unc.ravel()))
 		truth = np.concatenate((B_POS, B_NEG, C_IJ.ravel()))
-		pulls = (estimates - truth)/unc.ravel()
+		pulls = (estimates - truth)/unc
 		self.assertLess(np.max(np.abs(pulls)), 8.)
 
 
@@ -152,9 +158,10 @@ class PolarimeterTest(unittest.TestCase):
 		pulls = []
 		for _ in range(50):
 			h_pos, h_neg = _generateSpinCorrelatedPolarimeters(rng, 40_000)
-			b_pos, b_neg, c_ij, unc = taupair.calculateFanoCoeffsProjection(h_pos, h_neg)
+			b_pos, b_neg, c_ij, b_pos_unc, b_neg_unc, c_ij_unc = taupair.calculateFanoCoeffsProjection(h_pos, h_neg)
 			estimates = np.concatenate((b_pos.ravel(), b_neg.ravel(), c_ij.ravel()))
-			pulls.append((estimates - truth)/unc.ravel())
+			unc = np.concatenate((b_pos_unc.ravel(), b_neg_unc.ravel(), c_ij_unc.ravel()))
+			pulls.append((estimates - truth)/unc)
 		pulls = np.array(pulls)
 
 		self.assertLess(np.abs(np.mean(pulls)), 0.3)
@@ -163,12 +170,12 @@ class PolarimeterTest(unittest.TestCase):
 
 	def test_fanoCoeffsPiPiFrame(self):
 		'''Check the polarimeter vectors of tau+ tau- -> pi+ pi- nu nu in the nrk frame of the tau+.'''
-		self._checkFanoCoeffsFrame(taupair.calculateFanoCoeffsPiPi, withPi0=False)
+		self._checkFanoCoeffsFrame(taupair.calculatePolarimeterVectorPiPi, taupair.calculateFanoCoeffsPiPi, withPi0=False)
 
 
 	def test_fanoCoeffsRhoRhoFrame(self):
 		'''Check the polarimeter vectors of tau+ tau- -> rho+ rho- nu nu in the nrk frame of the tau+.'''
-		self._checkFanoCoeffsFrame(taupair.calculateFanoCoeffsRhoRho, withPi0=True)
+		self._checkFanoCoeffsFrame(taupair.calculatePolarimeterVectorRhoRho, taupair.calculateFanoCoeffsRhoRho, withPi0=True)
 
 
 
