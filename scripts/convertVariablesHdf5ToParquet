@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+# coding: utf-8
+"""Convert Variables HDF5 files below one directory to Parquet files below another."""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+import sys
+
+from sphysics.eventselection import Variables
+
+
+def parseArguments() -> argparse.Namespace:
+	parser = argparse.ArgumentParser(
+		description='Convert all Variables .hdf5 files in a directory tree to Parquet files.',
+	)
+	parser.add_argument('baseFolder', type=Path, help='Directory tree containing .hdf5 files.')
+	parser.add_argument('-o', '--output', dest='destinationFolder', type=Path, required=True,
+	                    help='Directory tree for converted .parquet files.')
+	return parser.parse_args()
+
+
+def main() -> None:
+	args = parseArguments()
+	baseFolder = args.baseFolder.resolve()
+	destinationFolder = args.destinationFolder.resolve()
+	if not baseFolder.is_dir():
+		raise NotADirectoryError(f"Base folder '{baseFolder}' does not exist or is not a directory.")
+	if baseFolder == destinationFolder:
+		raise ValueError('Base and destination folders must be different.')
+
+	inputPaths = sorted(baseFolder.rglob('*.hdf5'))
+	if not inputPaths:
+		print(f"No .hdf5 files found below '{baseFolder}'.")
+		return
+
+	for inputPath in inputPaths:
+		relativePath = inputPath.relative_to(baseFolder)
+		outputPath = destinationFolder / relativePath.with_suffix('.parquet')
+		if outputPath.exists():
+			raise FileExistsError(f"Destination file '{outputPath}' already exists.")
+		outputPath.parent.mkdir(parents=True, exist_ok=True)
+		variables = Variables.load(str(inputPath), printInfo=False)
+		variables.store(str(outputPath))
+		print(f"Converted '{relativePath}' to '{outputPath.relative_to(destinationFolder)}'.")
+
+
+if __name__ == '__main__':
+	main()
+	sys.exit(0)

@@ -1,0 +1,68 @@
+// variables defined by CMake
+#cmakedefine CMAKE_HOST_SYSTEM_NAME "@CMAKE_HOST_SYSTEM_NAME@"
+#cmakedefine CMAKE_HOST_SYSTEM_PROCESSOR "@CMAKE_HOST_SYSTEM_PROCESSOR@"
+#cmakedefine CMAKE_HOST_SYSTEM_VERSION "@CMAKE_HOST_SYSTEM_VERSION@"
+#cmakedefine NMB_CPU_CORES @NMB_CPU_CORES@
+#cmakedefine HOSTNAME "@HOSTNAME@"
+#cmakedefine USER "@USER@"
+#cmakedefine CMAKE_SOURCE_DIR "@CMAKE_SOURCE_DIR_@"
+#cmakedefine CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+#cmakedefine GIT_HASH @GIT_HASH@
+#define GIT_STATUS "@GIT_STATUS@"
+#cmakedefine Boost_VERSION "@Boost_VERSION@"
+#cmakedefine Boost_INCLUDE_DIRS "@Boost_INCLUDE_DIRS@"
+#cmakedefine PYTHONLIBS_VERSION "@PYTHONLIBS_VERSION@"
+#cmakedefine PYTHON_INCLUDE_DIRS "@PYTHON_INCLUDE_DIRS@"
+#cmakedefine Tensorflow_VERSION "@Tensorflow_VERSION@"
+#define sphysics_VERSION "@sphysics_VERSION@"
+
+
+// check macro variables set by CMake and set default value if not defined
+#ifndef CMAKE_HOST_SYSTEM_NAME
+#define CMAKE_HOST_SYSTEM_NAME "undefined"
+#endif
+#ifndef CMAKE_HOST_SYSTEM_PROCESSOR
+#define CMAKE_HOST_SYSTEM_PROCESSOR "undefined"
+#endif
+#ifndef CMAKE_HOST_SYSTEM_VERSION
+#define CMAKE_HOST_SYSTEM_VERSION "undefined"
+#endif
+#ifndef NMB_CPU_CORES
+#define NMB_CPU_CORES "undefined"
+#endif
+#ifndef HOSTNAME
+#define HOSTNAME "undefined"
+#endif
+#ifndef USER
+#define USER "undefined"
+#endif
+#ifndef CMAKE_SOURCE_DIR
+#define CMAKE_SOURCE_DIR "undefined"
+#endif
+#ifndef CMAKE_BUILD_TYPE
+#define CMAKE_BUILD_TYPE "undefined"
+#endif
+#ifndef GIT_HASH
+#define GIT_HASH "undefined"
+#endif
+#ifndef GIT_STATUS
+#define GIT_STATUS "undefined"
+#endif
+#ifndef Boost_VERSION
+#define Boost_VERSION "undefined"
+#endif
+#ifndef Boost_INCLUDE_DIRS
+#define Boost_INCLUDE_DIRS "undefined"
+#endif
+#ifndef PYTHONLIBS_VERSION
+#define PYTHONLIBS_VERSION "undefined"
+#endif
+#ifndef PYTHON_INCLUDE_DIRS
+#define PYTHON_INCLUDE_DIRS "undefined"
+#endif
+#ifndef Tensorflow_VERSION
+#define Tensorflow_VERSION "undefined"
+#endif
+#ifndef sphysics_VERSION
+#define sphysics_VERSION "undefined"
+#endif

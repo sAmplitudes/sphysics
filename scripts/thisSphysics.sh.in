@@ -1,0 +1,40 @@
+# source this file to set up SPHYSICS
+
+
+removePath(){
+	eval old_PATH="\$${1}"
+	to_remove="${2}"
+	export ${1}="$(echo "${old_PATH}" | sed -e "s;^${to_remove}:;;g" -e "s;^${to_remove}$;;g" -e "s;:${to_remove}$;;g" -e "s;:${to_remove}:;:;g")"
+}
+
+prependPath(){
+	if eval [ -z '\$${1}' ]; then
+		export ${1}=${2}
+	else
+		if [  -z "$( eval echo \$${1} | tr : \\n | grep -q ^${2}\$ )" ]; then
+			export ${1}="${2}:`eval echo \\$$1|tr : \\\n|grep -v '^$'|tr \\\n :|sed 's/:$//'`"
+		else
+			export ${1}="${2}:`eval echo \\$$1|tr : \\\n|grep -v '^$' | grep -v "$2" |tr \\\n :|sed 's/:$//'`"
+		fi
+	fi
+}
+
+
+old_SPHYSICS_BUILD="${SPHYSICS_BUILD}"
+if [ -n "${old_SPHYSICS_BUILD}" ]; then
+	removePath PATH "${old_SPHYSICS_BUILD}/bin"
+	removePath LD_LIBRARY_PATH "${old_SPHYSICS_BUILD}/lib"
+	removePath PYTHONPATH "${old_SPHYSICS_BUILD}/pyLib"
+fi
+
+export SPHYSICS_BUILD="@CMAKE_BINARY_DIR@"
+
+export SPHYSICS="@CMAKE_SOURCE_DIR@"
+
+prependPath PATH "${SPHYSICS_BUILD}/bin"
+prependPath LD_LIBRARY_PATH "${SPHYSICS_BUILD}/lib"
+prependPath PYTHONPATH "${SPHYSICS_BUILD}/pyLib"
+
+unset old_SPHYSICS_BUILD
+unset -f removePath
+unset -f prependPath
