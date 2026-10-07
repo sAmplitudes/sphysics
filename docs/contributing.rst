@@ -47,3 +47,23 @@ To install it in development mode (editable install), execute:
 In this way, the source files are not copied to the virtual environment but linked.
 Hence, changes in the source files directly reflect in the virtual environment.
 Changes in the C++ files will be reflected **only after recompiling the C++ code via pip install**.
+
+
+
+Releasing a new version
+-------------------------------------
+New versions are released from the ``main`` branch of the GitLab repository by executing:
+
+.. code-block:: bash
+
+   scripts/release.sh [--dry-run] [X.Y.Z]
+
+in the base folder of this repository.
+Without a version, the patch number of the latest version is increased by one.
+The local ``main`` branch must be identical to the ``main`` branch on GitLab.
+After checking that ``main`` contains only the public history, the script shows a summary and asks for confirmation.
+It then tags ``main`` with the version, pushes the tag to GitLab, where the CI deploys the documentation and the package, and pushes ``main`` and only this tag to the public GitHub repository (https://github.com/sAmplitudes/sphysics).
+Other branches and tags are never pushed to GitHub.
+With ``--dry-run``, the script only runs the checks and shows what it would do.
+
+Afterwards, create a GitHub release for the new tag to archive the version on Zenodo, which assigns it a DOI.
