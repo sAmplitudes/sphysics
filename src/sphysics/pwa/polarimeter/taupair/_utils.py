@@ -13,33 +13,33 @@ import numpy as np
 from .... import kinematics
 
 
-def get_rotation_to_bodyfixed_nrk(p_tauMinus: np.ndarray, p_electron: np.ndarray) -> np.ndarray:
+def get_rotation_to_bodyfixed_nrk(p_tauPlus: np.ndarray, p_positron: np.ndarray) -> np.ndarray:
 	'''Build rotation matrix to the nrk body-fixed frame.
 
 	The coordinate convention follows
 	Phys. Rev. D **109**, 032005 (2024), `doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>`_
 
-	:param p_tauMinus: Tau-minus momentum with shape ``(3, ...)`` or ``(4, ...)``
-	:param p_electron: Electron momentum with shape ``(3, ...)`` or ``(4, ...)``
+	:param p_tauPlus: Tau-plus momentum with shape ``(3, ...)`` or ``(4, ...)``
+	:param p_positron: Positron momentum with shape ``(3, ...)`` or ``(4, ...)``
 	:return: Rotation matrix with shape ``(3, 3, ...)``
 	'''
-	basis = kinematics.geometry.build_orthonormal_basis(p_tauMinus, p_electron)
+	basis = kinematics.geometry.build_orthonormal_basis(p_tauPlus, p_positron)
 	return kinematics.geometry.get_rotation_matrix_from_basis_vectors(*basis)
 
 
-def rotate_to_bodyfixed_nrk(p_tauMinus: np.ndarray, p_electron: np.ndarray, *args: np.ndarray) -> tuple[np.ndarray, ...]:
+def rotate_to_bodyfixed_nrk(p_tauPlus: np.ndarray, p_positron: np.ndarray, *args: np.ndarray) -> tuple[np.ndarray, ...]:
 	'''Rotate vectors to the nrk body-fixed frame.
 
 	The coordinate convention follows
 	Phys. Rev. D **109**, 032005 (2024), `doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>`_
 
-	:param p_tauMinus: Tau-minus momentum with shape ``(3, ...)`` or ``(4, ...)``
-	:param p_electron: Electron momentum with shape ``(3, ...)`` or ``(4, ...)``
+	:param p_tauPlus: Tau-plus momentum with shape ``(3, ...)`` or ``(4, ...)``
+	:param p_positron: Positron momentum with shape ``(3, ...)`` or ``(4, ...)``
 	:param args: Additional vectors, each with shape ``(3, ...)`` or ``(4, ...)``
-	:return: Tuple of rotated vectors in the order ``(p_tauMinus, p_electron, *args)``
+	:return: Tuple of rotated vectors in the order ``(p_tauPlus, p_positron, *args)``
 	'''
-	rotation = get_rotation_to_bodyfixed_nrk(p_tauMinus, p_electron)
+	rotation = get_rotation_to_bodyfixed_nrk(p_tauPlus, p_positron)
 	rotated = []
-	for p in (p_tauMinus, p_electron, *args):
+	for p in (p_tauPlus, p_positron, *args):
 		rotated.append(kinematics.geometry.apply_rotation_matrix(rotation, p))
 	return tuple(rotated)
