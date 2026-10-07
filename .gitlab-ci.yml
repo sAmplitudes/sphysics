@@ -102,9 +102,8 @@ pages:
   artifacts:
     paths:
       - public
-  only:
-  - main
-  - tags
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/
 
 pre-commit:
   stage: check
@@ -173,8 +172,7 @@ build_package:
 publish_package:
   stage: deploy
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/
   dependencies:
     - build_package
   variables:
