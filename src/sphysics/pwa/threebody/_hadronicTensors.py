@@ -180,7 +180,7 @@ class HadronicTensors(Kinematics):
 
 	@property
 	def wave_1p_2p_P(self) -> np.ndarray:
-		''' Current for wave :math:`1^+ \\to [ (12)_2^+ (3) ]_D` '''
+		''' Current for wave :math:`1^+ \\to [ (12)_2^+ (3) ]_P` '''
 		return math.einsum('mne,n,r,nre,re->me', self.g123, lorentz.et, lorentz.et, self.tensor_12_Dwave, self.tensor_123_Pwave)
 
 	@property

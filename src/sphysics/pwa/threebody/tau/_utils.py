@@ -115,8 +115,6 @@ def variablesReco2Events(sample: eventselection.Variables, prefix: str = '') -> 
 	events.pi3MP = sample[f'{prefix}pi3MP']
 	events.isParticle = sample[f'{prefix}isParticle']
 
-	print(events.nEvents)
-	print(events.pi1PM)
 	events.check()
 	return events
 

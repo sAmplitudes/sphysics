@@ -65,8 +65,9 @@ class Tau2ThreeCharedPi(PWAModel):
 			dynamicIsobarAmplitude (Callable[[np.ndarray], np.ndarray]): Dynamic amplitude of the X system as function of the :math:`2\\pi` mass
 			barrierXCompensation (Callable[[int, np.ndarray, np.ndarray], np.ndarray], optional): Angular momentum barrier compensation factor in the X decay. Defaults to None.
 			                                                                          This is a function of (L, m123, m12). L will be parsed from the hadronicTensorName.
-			barrierIsobarCompensation (Callable[[int, np.ndarray], np.ndarray], optional): Angular momentum barrier compensation factor in the X decay. Defaults to None.
-			                                                                               This is a function of (L, m12). L will be parsed from the hadronicTensorName.
+			barrierIsobarCompensation (Callable[[int, np.ndarray], np.ndarray], optional): Angular momentum barrier compensation factor in the isobar decay.
+			                                                                               Defaults to None. This is a function of (L, m12), where L is the
+			                                                                               isobar spin J_isobar parsed from the hadronicTensorName.
 		"""
 
 		if waveName in self._waveNames:
@@ -216,19 +217,20 @@ class Tau2ThreeCharedPi(PWAModel):
 		'''
 		Calculate the unpolarized leptonic tensor
 
-		:param tau: 4-momentum of the tau
-		:param tau: 4-momentum of the neutrino
+		:param tau: 4-momentum of the :math:`\\tau`
+		:param nu: 4-momentum of the neutrino
+		:param isParticle: Bool array, which is True for :math:`\\tau^-` decays and False for :math:`\\tau^+` decays
 		'''
 		return self._dirac.weakLepTensor_unpolarizedDecay(tau, nu, isParticle)
 
 
 	def calcLeptonicTensorIntegratedUnpolarized(self, events: EventsTau2ThreeChargedPi):
 		'''
-		Calculate the unpolarized leptonic current, integrated over the unknown angle :math:`\\alpha` of the :math:`\\tau` momentum around the measured hadronic momentum
+		Calculate the unpolarized leptonic tensor, integrated over the unknown angle :math:`\\alpha` of the :math:`\\tau` momentum around the measured hadronic momentum
 
-		:param events: The kinematics MUST be given in the :math:`e^+ e^-` CMS, the tau and neutrino 4-momenta from `events` are NOT used
-		:param tauE: Energy of the :math:`\\tau` in the :math:`e^+e^-` CMS
-		:param tauM: Rest mass of the :math:`\\tau`
+		:param events: The kinematics MUST be given in the :math:`e^+ e^-` CMS. The tau and neutrino 4-momenta from `events` are NOT used;
+		               the :math:`\\tau` momentum is reconstructed from the hadronic momentum and the :math:`\\tau` energy and mass
+		               `events.tauMP_E` and `events.tauMP_M`
 		'''
 
 		p123 = events.pi1PM + events.pi2MP + events.pi3MP
@@ -287,7 +289,7 @@ class Tau2ThreeCharedPi(PWAModel):
 
 		# checkAmplitudes
 		if np.any(np.isnan(decayAmplitudes)):
-			raise Exception("Some of the decay amplitudes is NaN! You ma want to use `np.seterr('raise')`.")
+			raise Exception("Some of the decay amplitudes is NaN! You may want to use `np.seterr('raise')`.")
 		return decayAmplitudes
 
 
@@ -302,7 +304,7 @@ class Tau2ThreeCharedPi(PWAModel):
 		if events.tauMP.size == 0:
 			raise Exception("Tau momenta not stored in events!")
 		if events.nu.size == 0:
-			raise Exception("Tau momenta not stored in events!")
+			raise Exception("Neutrino momenta not stored in events!")
 		hadronicCurrents = self.calcHadronicCurrents(events)
 		leptonicTensor = self.calcLeptonicTensorUnpolarized(events.tauMP, events.nu, events.isParticle)
 		leptonicVectors = decomposeHermitianMatrix2(leptonicTensor)
@@ -321,6 +323,6 @@ class Tau2ThreeCharedPi(PWAModel):
 
 		# checkAmplitudes
 		if np.any(np.isnan(decayAmplitudes)):
-			raise Exception("Some of the decay amplitudes is NaN! You ma want to use `np.seterr('raise')`.")
+			raise Exception("Some of the decay amplitudes is NaN! You may want to use `np.seterr('raise')`.")
 
 		return decayAmplitudes
