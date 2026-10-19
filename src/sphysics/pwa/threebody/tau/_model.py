@@ -274,11 +274,6 @@ class Tau2ThreeCharedPi(PWAModel):
 		leptonicTensor = self.calcLeptonicTensorIntegratedUnpolarized(events)
 		leptonicVectors =  decomposeHermitianMatrix2(leptonicTensor)
 
-		# quick check
-		if np.max(np.abs( leptonicTensor - math.einsum('ime,ine->mne', leptonicVectors, math.conjugate(leptonicVectors)) )) > 1e-10:
-			raise Exception("Vector decomposition of leptonic tensor did not work!")
-
-
 		decayAmplitudes = np.empty((self.nWaves, 4, events.nEvents), dtype=np.complex128)
 		for waveIdx in range(self.nWaves):
 			for leptonicVecorIdx in range(4):

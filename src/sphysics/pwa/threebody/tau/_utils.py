@@ -271,22 +271,36 @@ def decomposeHermitianMatrix(mat: np.ndarray) -> np.ndarray:
 	return retVal
 
 
-def decomposeHermitianMatrix2(mat: np.ndarray) -> np.ndarray:
+def decomposeHermitianMatrix2(mat: np.ndarray, relativeTolerance: float = 1e-10) -> np.ndarray:
 	"""
-	Decomposes a hermitian matrix into vectors, such, that
+	Decomposes a positive semi-definite hermitian matrix into vectors, such, that
 	vecs = decompose(mat) => mat = np.einsum("ime,ine->mne", vecs, conjugate(vecs))
-	@param mat np.array of hermitian matrix of shape ((dim, dim, nEvents))
+
+	:param mat: np.array of hermitian matrix of shape ((dim, dim, nEvents))
+	:param relativeTolerance: Negative eigenvalues down to -relativeTolerance times the largest absolute eigenvalue of the same matrix
+	                          are considered as numerical noise and set to zero. Smaller eigenvalues raise an exception.
+	                          The same relative tolerance is used to check that the vectors reproduce the matrix.
+	:raises ValueError: If a matrix has a significantly negative eigenvalue or if the decomposition does not reproduce the matrix
 	"""
 	eigenValue, eigenVector = np.linalg.eigh(np.transpose(mat, (2,0,1)))
 
-	if np.max(np.abs(eigenValue)) < -1e-10:
-		raise Exception("Eigenvalues must be positive")
+	scale = np.max(np.abs(eigenValue), axis=1, keepdims=True)
+	isNegative = eigenValue < -relativeTolerance*scale
+	if np.any(isNegative):
+		relativeEigenValue = eigenValue/np.where(scale > 0., scale, 1.)
+		log.raiseException(ValueError, f"Eigenvalues must be positive, but {np.sum(np.any(isNegative, axis=1))} of {mat.shape[-1]} matrices have "
+		                               f"significantly negative eigenvalues (most negative eigenvalue relative to the largest one: {np.min(relativeEigenValue):.3e})!")
 
-	eigenValue[eigenValue<0] = 0. # set eigenvalues that are negative, but numerically close to zero (see checks above), to zero
+	eigenValue[eigenValue<0] = 0. # set eigenvalues that are negative, but numerically close to zero (see check above), to zero
 
 	eigenVector *= math.sqrt(eigenValue[:,None,:])
+	vecs = math.transpose(eigenVector, (2,1,0))
 
-	return math.transpose(eigenVector, (2,1,0))
+	reconstructed = math.einsum('ime,ine->mne', vecs, math.conjugate(vecs))
+	if np.max(np.abs(reconstructed - mat)) > relativeTolerance*max(np.max(np.abs(mat)), np.finfo(float).tiny):
+		log.raiseException(ValueError, "Vector decomposition of the hermitian matrix did not work!")
+
+	return vecs
 
 
 def calcDecayAmplitudesIntegratedNormIntegrals(model, xPM_M_range, nMCevents, energyCMS=None):
