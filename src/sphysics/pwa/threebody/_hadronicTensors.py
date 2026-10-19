@@ -227,9 +227,10 @@ class HadronicTensors(Kinematics):
 class Wave:
 	"""Class representing a 3-body partial wave, i.e. a set of quantum numbers describing the state of three pseudoscalar particles
 
-	String label formats are e.g.
+	String label formats are ``<J_X><P_X>_<isobar>_<L>``, optionally prefixed by ``wave_``, where the isobar is given by its
+	quantum numbers ``<J_isobar><P_isobar>`` or by a name followed by the quantum numbers in square brackets, e.g.
 		- 1p_1m_S
-		- 1p_rho(770)_S
+		- wave_1p_1m_S
 		- 1p_rho(770)[1m]_S
 	"""
 	chargeLabel = {'m': -1, 'p': +1}
@@ -250,18 +251,27 @@ class Wave:
 
 	@classmethod
 	def fromString(cls, name: str)-> Wave:
+		"""Construct a :class:`Wave` from its string label, e.g. ``'wave_1p_1m_S'``, ``'1p_1m_S'`` or ``'1p_rho(770)[1m]_S'``.
 
-		X, isobar, L = name.lstrip('wave_').split('_')
-		J_X, P_X = list(X)
+		Raises:
+			ValueError: If the label cannot be parsed, e.g. if the isobar quantum numbers are missing
+		"""
+		label = name[len('wave_'):] if name.startswith('wave_') else name
+		parts = label.split('_')
+		if len(parts) != 3:
+			log.raiseException(ValueError, f"Cannot parse wave label '{name}': expected the format '<J_X><P_X>_<isobar>_<L>', e.g. '1p_rho(770)[1m]_S'")
+		X, isobar, L = parts
 		if '[' in isobar:
-			isobarLabel, isobarQN = isobar.split(']')
-			J_isobar, P_isobar, *_ = list(isobarQN)
-		elif len(isobar) == 2:
-			J_isobar, P_isobar = list(isobar)
-			isobarLabel = None
+			isobarLabel, isobarQN = isobar.rstrip(']').split('[', 1)
 		else:
-			isobarLabel = isobar
-			J_isobar = P_isobar = None
+			isobarLabel, isobarQN = None, isobar
+		for quantumNumbers, system in ((X, 'X'), (isobarQN, 'isobar')):
+			if len(quantumNumbers) != 2 or not quantumNumbers[0].isdigit() or quantumNumbers[1] not in cls.chargeLabel:
+				log.raiseException(ValueError, f"Cannot parse the {system} quantum numbers '{quantumNumbers}' in wave label '{name}': "
+				                               f"expected '<J><P>' with P in {list(cls.chargeLabel)}, e.g. '1p'. "
+				                               f"Isobars must be given as e.g. 'rho(770)[1m]' or '1m'.")
+		J_X, P_X = list(X)
+		J_isobar, P_isobar = list(isobarQN)
 		return cls(J_X, P_X, J_isobar, P_isobar, isobarLabel, L)
 
 
