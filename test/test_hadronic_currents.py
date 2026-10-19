@@ -343,7 +343,7 @@ class Tau3PiModelTest(unittest.TestCase):
 		also with a vector-current (1-) wave interfering with the axial-vector and pseudo-scalar waves.
 
 		Known to fail: the tau+ hadronic current is not the CP transform of the tau- current for 1- waves
-		(cf. Finkemeier and Mirkes, Phys. Rev. D 54 (1996) 5096, eq. (42)).'''
+		(cf. Finkemeier and Mirkes, AIP Conf. Proc. 349 (1996) 119, arXiv:hep-ph/9508312, eq. (42)).'''
 		p1, p2, p3, pTau, pNu = self.momenta
 		eventsMinus = self._makeEvents(p1, p2, p3, pTau, pNu, np.ones(self.nEvents, dtype=bool))
 		eventsPlusMirror = self._makeEvents(REFLECT*p1, REFLECT*p2, REFLECT*p3, REFLECT*pTau, REFLECT*pNu, np.zeros(self.nEvents, dtype=bool))
@@ -358,7 +358,8 @@ class Tau3PiModelTest(unittest.TestCase):
 		tensor = self.model.calcLeptonicTensorUnpolarized(pTau, pNu, self.isParticle)
 		vectors = decomposeHermitianMatrix2(tensor)
 		self.assertAlmostEqual(_relDev(np.einsum('ime,ine->mne', vectors, np.conj(vectors)), tensor), 0., 12)
-		with self.assertRaises(ValueError):
+		# match the message, since the subsequent reconstruction check would raise a ValueError as well
+		with self.assertRaisesRegex(ValueError, 'negative eigenvalues'):
 			decomposeHermitianMatrix2(np.diag([1., -0.5, 2., 3.]).astype(complex)[:, :, None])
 		matrix = np.diag([1., -1e-13, 2., 3.]).astype(complex)[:, :, None]  # numerically zero eigenvalue is tolerated
 		vectors = decomposeHermitianMatrix2(matrix)
@@ -387,6 +388,20 @@ class Tau3PiModelTest(unittest.TestCase):
 			tau3.getTauMomentumComponentsCMS(np.array([[3.5], [0.], [0.], [3.288]]), tauE, C.M.tau)
 		parallel, ortho1, ortho2 = tau3.getTauMomentumComponentsCMS(np.array([[3.5], [0.], [0.], [3.288]]), tauE, C.M.tau, orthoDirection=[1., 0., 0.])
 		self.assertTrue(np.all(np.isfinite(ortho1)) and np.all(np.isfinite(ortho2)))
+
+
+	def test_tauMomentumComponentsAtKinematicLimit(self):
+		'''Events with |cos(theta)| above 1 within the rounding tolerance are clipped instead of giving NaN.'''
+		tauE = self.ECMS/2.
+		tauAbsP = np.sqrt(tauE**2 - C.M.tau**2)
+		eNu = np.array([0.8, 1.3, 2.1, 2.9])
+		pHadron = np.vstack((tauE - eNu, np.outer([0.36, -0.48, 0.8], tauAbsP - eNu)))  # collinear with the tau: cos(theta) = 1
+		pHadron[0] += 2e-12  # cos(theta) - 1 = 8e-14 ... 6e-13, inside the rounding tolerance of 1e-12
+		parallel, ortho1, ortho2 = tau3.getTauMomentumComponentsCMS(pHadron, tauE, C.M.tau)
+		self.assertTrue(all(np.all(np.isfinite(p)) for p in (parallel, ortho1, ortho2)))
+		self.assertAlmostEqual(np.max(np.abs(ortho1)), 0., 5)
+		self.assertAlmostEqual(np.max(np.abs(ortho2)), 0., 5)
+		self.assertAlmostEqual(np.max(np.abs(lorentz.lp(parallel, parallel) - C.M.tau**2)), 0., 5)
 
 
 if __name__ == '__main__':
