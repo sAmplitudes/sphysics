@@ -108,7 +108,8 @@ class Formalism(object):
 		          = 4 \\left[ p_\\tau^\\mu p_{\\nu_\\tau}^\\nu + p_{\\nu_\\tau}^\\mu p_\\tau^\\nu - g^{\\mu\\nu} \\, p_\\tau \\cdot p_{\\nu_\\tau}
 		          \\pm i \\epsilon^{\\alpha\\beta\\mu\\nu} p_{\\nu_\\tau,\\alpha} p_{\\tau,\\beta} \\right]
 
-		with :math:`\\epsilon_{0123} = +1`, i.e. :math:`\\epsilon^{0123} = -1` (convention of Kühn and Mirkes, see :data:`sphysics.lorentz.epsilon`), and the upper (lower) sign for :math:`\\tau^-` (:math:`\\tau^+`) decays.
+		with :math:`\\epsilon_{0123} = +1`, i.e. :math:`\\epsilon^{0123} = -1` (convention of Kühn and Mirkes, see :data:`sphysics.lorentz.epsilon`),
+		and the upper (lower) sign for :math:`\\tau^-` (:math:`\\tau^+`) decays.
 		For :math:`\\tau^-` this is the unpolarized lepton tensor of Kühn and Mirkes, Z. Phys. C 56 (1992) 661, Eqs. (5) and (6),
 		with :math:`g_V = g_A = 1`, i.e. :math:`L^{1,\\mu\\nu} - L_{3,\\mu\\nu}` with the indices raised.
 

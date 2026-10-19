@@ -337,12 +337,9 @@ class Tau3PiModelTest(unittest.TestCase):
 		self.assertAlmostEqual(_relDev(self._intensity(eventsPlusMirror, couplings), self._intensity(eventsMinus, couplings)), 0., 12)
 
 
-	@unittest.expectedFailure
 	def test_cpMirrorWithVectorWave(self):
-		'''For the same couplings, the tau+ intensity at space-reflected momenta must equal the tau- intensity (CP invariance),
-		also with a vector-current (1-) wave interfering with the axial-vector and pseudo-scalar waves.
-
-		Known to fail: the tau+ hadronic current is not the CP transform of the tau- current for 1- waves
+		'''For the same couplings, the tau+ intensity at space-reflected momenta equals the tau- intensity (CP invariance),
+		also with a vector-current (1-) wave interfering with the axial-vector and pseudo-scalar waves
 		(cf. Finkemeier and Mirkes, AIP Conf. Proc. 349 (1996) 119, arXiv:hep-ph/9508312, eq. (42)).'''
 		p1, p2, p3, pTau, pNu = self.momenta
 		eventsMinus = self._makeEvents(p1, p2, p3, pTau, pNu, np.ones(self.nEvents, dtype=bool))
@@ -350,6 +347,25 @@ class Tau3PiModelTest(unittest.TestCase):
 		self.assertAlmostEqual(_relDev(self.model.calcIntensityUnpolarized(eventsPlusMirror, self.couplings, normalized=False),
 		                               self.model.calcIntensityUnpolarized(eventsMinus, self.couplings, normalized=False)), 0., 10)
 		self.assertAlmostEqual(_relDev(self._intensity(eventsPlusMirror, self.couplings), self._intensity(eventsMinus, self.couplings)), 0., 10)
+
+
+	def test_antiparticleCurrents(self):
+		'''The tau+ current is the CP transform of the tau- current, J_+(p) = Lambda_P J_-(R p), for every wave:
+		only the vector-current wave changes sign relative to the tau- formula. The charge of every event must be known.'''
+		p1, p2, p3, _, _ = self.momenta
+		currentsMinus = self.model.calcHadronicCurrentsUnsymmetrized(p1, p2, p3)
+		currentsPlus = self.model.calcHadronicCurrentsUnsymmetrized(p1, p2, p3, isParticle=False)
+		currentsMinusReflected = self.model.calcHadronicCurrentsUnsymmetrized(REFLECT*p1, REFLECT*p2, REFLECT*p3)
+		currentsMixed = self.model.calcHadronicCurrentsUnsymmetrized(p1, p2, p3, isParticle=self.isParticle)
+		for name, minus, plus, minusReflected, mixed in zip(self.model.waveNames, currentsMinus, currentsPlus, currentsMinusReflected, currentsMixed):
+			self.assertAlmostEqual(_relDev(plus, REFLECT*minusReflected), 0., 12, msg=name)
+			self.assertAlmostEqual(_relDev(plus, (-1. if name.startswith('1m') else 1.)*minus), 0., 12, msg=name)
+			self.assertAlmostEqual(_relDev(mixed[:, self.isParticle], minus[:, self.isParticle]), 0., 12, msg=name)
+			self.assertAlmostEqual(_relDev(mixed[:, ~self.isParticle], plus[:, ~self.isParticle]), 0., 12, msg=name)
+		events = tau3.EventsTau2ThreeChargedPi(self.ECMS/2., C.M.tau)
+		events.pi1PM, events.pi2MP, events.pi3MP = p1, p2, p3
+		with self.assertRaises(ValueError):
+			self.model.calcHadronicCurrents(events)
 
 
 	def test_decomposeHermitianMatrix(self):

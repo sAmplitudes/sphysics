@@ -24,6 +24,12 @@ class HadronicTensors(Kinematics):
 	Class for calculating various three-body hadronic currents
 
 	The isobar system is always the (12) system.
+
+	The tensors are those of Krinner and Paul, Eur. Phys. J. C 81 (2021) 1073, formulated for the :math:`\\tau^-` decay
+	(particle 1 is the :math:`\\pi^+`). The current of the charge-conjugate decay follows from the CP transformation
+	:math:`\\Lambda_P t(\\mathcal{R} p)`, where :math:`\\mathcal{R}` reverses all three-momenta and :math:`\\Lambda_P = \\mathrm{diag}(1,-1,-1,-1)`:
+	the :math:`1^+` and :math:`0^-` currents are unchanged, the :math:`1^-` current (a pseudo-vector) changes sign
+	(see :meth:`sphysics.pwa.threebody.tau.Tau2ThreeCharedPi.calcHadronicCurrentsUnsymmetrized`).
 	'''
 
 	def reset(self) -> None:
