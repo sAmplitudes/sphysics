@@ -6,6 +6,7 @@ set(_TESTS
     "generators"
     "dirac"
     "tau_pwa"
+    "hadronic_currents"
     "kinematics"
     "variables"
     "utils"
