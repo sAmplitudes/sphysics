@@ -22,7 +22,12 @@ et = _np.array([eta[0, 0], eta[1, 1], eta[2, 2], eta[3, 3]])
 
 ##################
 # Levi-Civita tensor
-# Be aware: the Levi-Civita tensor is different from the Levi-Civita symbol by -1 in Minkowski space
+# levitCivitaSymbol is the permutation symbol with levitCivitaSymbol[0, 1, 2, 3] = +1 (no index position).
+# epsilon = levitCivitaTensor is the contravariant Levi-Civita tensor eps^{mu nu rho sigma}, i.e., it has to be
+# contracted with covariant vectors (using `et`), in the convention eps_{0123} = +1, eps^{0123} = -1
+# (Kuehn and Mirkes, Z. Phys. C 56 (1992) 661). Hence, using levitCivitaSymbol as eps^{mu nu rho sigma}
+# corresponds to the opposite convention eps^{0123} = +1.
+# With gamma5 = i gamma^0 gamma^1 gamma^2 gamma^3 (sphysics.dirac), Tr[gamma^mu gamma^nu gamma^rho gamma^sigma gamma5] = 4i eps^{mu nu rho sigma}.
 
 levitCivitaSymbol = _np.zeros((4, 4, 4, 4))
 levitCivitaSymbol[0, 1, 2, 3] = 1.

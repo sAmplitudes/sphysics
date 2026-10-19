@@ -46,7 +46,8 @@ def get_polarimeter_from_J(J: np.ndarray, isParticle: np.ndarray, pTau: np.ndarr
 
 	S = 2.0*( lorentz.lp(Jconj, pNu)*J + lorentz.lp(J, pNu)*Jconj - lorentz.lp(Jconj, J)*pNu )
 
-	S5 = -2.0* math.imag(  math.einsum('mnrs,n,ne,r,re,s,se->me', lorentz.levitCivitaSymbol, lorentz.et, Jconj, lorentz.et, J, lorentz.et, pNu) )
+	# 2 Im eps^{mu nu rho sigma} J*_nu J_rho N_sigma with eps_{0123} = +1, cf. Eq. (7) of doi:10.1016/j.cpc.2024.109153
+	S5 = 2.0*math.imag(math.einsum('mnrs,n,ne,r,re,s,se->me', lorentz.epsilon, lorentz.et, Jconj, lorentz.et, J, lorentz.et, pNu))
 
 	Stot = S5 - va*S
 

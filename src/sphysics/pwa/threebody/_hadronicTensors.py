@@ -204,8 +204,10 @@ class HadronicTensors(Kinematics):
 		:math:`f_\\epsilon^{(12)} = +1`. Kühn and Mirkes write the vector current as :math:`i V_3 F_3`;
 		a coupling of this wave therefore corresponds to :math:`i F_3`.
 		'''
+		# eps(p123, T12, T123) = eps(p1, p2, p3); the operand order deliberately differs from eps(pX, TX, T12) in
+		# Eq. (21) of Krinner and Paul, which gives -eps(p1, p2, p3) and thus contradicts their Eq. (35)
 		return math.einsum('mnrs,n,ne,r,re,s,se->me',
-		                    lorentz.levitCivitaSymbol, lorentz.et, self.p123, lorentz.et, self.tensor_123_Pwave, lorentz.et, self.tensor_12_Pwave)
+		                    lorentz.epsilon, lorentz.et, self.p123, lorentz.et, self.tensor_12_Pwave, lorentz.et, self.tensor_123_Pwave)
 
 
 	@property
