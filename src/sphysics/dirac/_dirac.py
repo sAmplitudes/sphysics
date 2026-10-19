@@ -8,6 +8,7 @@
 from __future__ import absolute_import, print_function, division
 
 import numpy as np
+import tensorflow as tf
 
 from .. import math
 from .. import lorentz
@@ -101,23 +102,27 @@ class Formalism(object):
 
 	def weakLepTensor_unpolarizedDecay(self, pTau, pNu, isParticle):
 		"""
-		:math:`L_{\\mu\\nu} = \\frac{1}{2} \\sum_h l^\\mu_h (l_h^\\nu)^*`
+		:math:`L^{\\mu\\nu} = \\frac{1}{2} \\sum_h l^\\mu_h (l_h^\\nu)^*`
 
-		Four-momenta are :math:`[E, p_x, p_y, p_z]` for every event
+		Four-momenta are :math:`[E, p_x, p_y, p_z]` for every event. The four-momenta can be numpy arrays or TensorFlow tensors.
 
-		:param pTau: Four-momenta of the decaying :math:`\\tau^{-}`
-		:param pNu: Four-momenta of the final-state :math:`\\nu`
+		:param pTau: Four-momenta of the decaying :math:`\\tau^{\\mp}` of the shape (4, nEvents)
+		:param pNu: Four-momenta of the final-state :math:`\\nu` or :math:`\\bar{\\nu}` of the shape (4, nEvents)
+		:param isParticle: True for :math:`\\tau^{-}` (particle) decays, False for :math:`\\tau^{+}` (antiparticle) decays,
+		                   for which the sign of the antisymmetric :math:`\\epsilon` term is reversed.
+		                   Scalar (Python or numpy bool) or array/tensor of the shape (nEvents,)
 		"""
-		fakk = math.full((1,pTau.shape[-1]), 1., pTau)
-		if isParticle is False:
-			fakk *= -1.
-		if not np.isscalar(isParticle):
-			fakk[:,~isParticle] = -1.
-		retVal = 4.j * fakk * math.einsum('ijkl,ke,le,i,j->ije',lorentz.levitCivitaSymbol,pNu,pTau,lorentz.et,lorentz.et)
-		retVal += 4. * math.einsum('ie,je->ije', pTau, pNu)
-		retVal += 4. * math.einsum('ie,je->ije', pNu, pTau)
-		retVal -= 4. * math.einsum('ie,ie,i,kl->kle', pTau, pNu, lorentz.et, lorentz.eta)
-		return retVal
+		# sign of the epsilon term: +1 for particle (tau-) decays, -1 for antiparticle (tau+) decays
+		if isinstance(pTau, tf.Tensor):
+			sign = 2.*tf.cast(isParticle, pTau.dtype) - 1.
+		else:
+			sign = np.where(np.asarray(isParticle, dtype=bool), 1., -1.)
+		# the momenta are the first operands of the einsums, such that the TensorFlow implementation is used for tensors
+		antisymmetricPart = 4. * sign * math.einsum('ke,le,ijkl,i,j->ije', pNu, pTau, lorentz.levitCivitaSymbol, lorentz.et, lorentz.et)
+		symmetricPart = 4. * math.einsum('ie,je->ije', pTau, pNu) \
+		              + 4. * math.einsum('ie,je->ije', pNu, pTau) \
+		              - 4. * math.einsum('ie,ie,i,kl->kle', pTau, pNu, lorentz.et, lorentz.eta)
+		return math.complex(symmetricPart, antisymmetricPart)
 
 	def getParticleSpinor(self, p: np.ndarray, isUp: np.ndarray, isPart: np.ndarray) -> np.ndarray:
 		"""
