@@ -195,7 +195,15 @@ class HadronicTensors(Kinematics):
 
 	@property
 	def wave_1m_1m_P(self) -> np.ndarray:
-		''' Current for wave :math:`1^- \\to [ (12)_1^- (3) ]_P` '''
+		''' Current for wave :math:`1^- \\to [ (12)_1^- (3) ]_P`
+
+		Convention:
+		:math:`\\epsilon^{\\mu\\nu\\rho\\sigma} p_{1,\\nu} p_{2,\\rho} p_{3,\\sigma}` with :math:`\\epsilon_{0123} = +1`,
+		i.e. the vector structure :math:`V_3` of Kühn and Mirkes, Z. Phys. C 56 (1992) 661, with :math:`q_3 = p_1`
+		the odd-charge pion, as implemented in TAUOLA, and :math:`p_\\epsilon` of Krinner and Paul with
+		:math:`f_\\epsilon^{(12)} = +1`. Kühn and Mirkes write the vector current as :math:`i V_3 F_3`;
+		a coupling of this wave therefore corresponds to :math:`i F_3`.
+		'''
 		return math.einsum('mnrs,n,ne,r,re,s,se->me',
 		                    lorentz.levitCivitaSymbol, lorentz.et, self.p123, lorentz.et, self.tensor_123_Pwave, lorentz.et, self.tensor_12_Pwave)
 

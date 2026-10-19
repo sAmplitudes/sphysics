@@ -176,9 +176,9 @@ class HadronicTensorsTest(unittest.TestCase):
 		'''The 1- current is proportional to eps(p1, p2, p3), with opposite sign for the Bose-symmetrization partner (eq. (35)).'''
 		for p1, p2, p3, _ in self.samples:
 			H = HadronicTensors(p1, p2, p3)
-			pEps = np.einsum('mnls,n,ne,l,le,s,se->me', lorentz.levitCivitaSymbol, ET, p1, ET, p2, ET, p3)
-			self.assertAlmostEqual(_relDev(H.wave_1m_1m_P, -pEps), 0., 10)
-			self.assertAlmostEqual(_relDev(HadronicTensors(p1, p3, p2).wave_1m_1m_P, pEps), 0., 10)
+			pEps = np.einsum('mnls,n,ne,l,le,s,se->me', lorentz.epsilon, ET, p1, ET, p2, ET, p3)
+			self.assertAlmostEqual(_relDev(H.wave_1m_1m_P, pEps), 0., 10)
+			self.assertAlmostEqual(_relDev(HadronicTensors(p1, p3, p2).wave_1m_1m_P, -pEps), 0., 10)
 
 
 	def test_parityOfCurrents(self):

@@ -102,7 +102,15 @@ class Formalism(object):
 
 	def weakLepTensor_unpolarizedDecay(self, pTau, pNu, isParticle):
 		"""
-		:math:`L^{\\mu\\nu} = \\frac{1}{2} \\sum_h l^\\mu_h (l_h^\\nu)^*`
+		Unpolarized leptonic tensor
+
+		.. math:: L^{\\mu\\nu} = \\frac{1}{2} \\sum_h l^\\mu_h (l_h^\\nu)^*
+		          = 4 \\left[ p_\\tau^\\mu p_{\\nu_\\tau}^\\nu + p_{\\nu_\\tau}^\\mu p_\\tau^\\nu - g^{\\mu\\nu} \\, p_\\tau \\cdot p_{\\nu_\\tau}
+		          \\pm i \\epsilon^{\\alpha\\beta\\mu\\nu} p_{\\nu_\\tau,\\alpha} p_{\\tau,\\beta} \\right]
+
+		with :math:`\\epsilon_{0123} = +1` (Bjorken-Drell conventions) and the upper (lower) sign for :math:`\\tau^-` (:math:`\\tau^+`) decays.
+		For :math:`\\tau^-` this is the unpolarized lepton tensor of Kühn and Mirkes, Z. Phys. C 56 (1992) 661, Eqs. (5) and (6),
+		with :math:`g_V = g_A = 1`, i.e. :math:`L^{1,\\mu\\nu} - L_{3,\\mu\\nu}` with the indices raised.
 
 		Four-momenta are :math:`[E, p_x, p_y, p_z]` for every event. The four-momenta can be numpy arrays or TensorFlow tensors.
 
@@ -117,11 +125,13 @@ class Formalism(object):
 			sign = 2.*tf.cast(isParticle, pTau.dtype) - 1.
 		else:
 			sign = np.where(np.asarray(isParticle, dtype=bool), 1., -1.)
-		# the momenta are the first operands of the einsums, such that the TensorFlow implementation is used for tensors
-		antisymmetricPart = 4. * sign * math.einsum('ke,le,ijkl,i,j->ije', pNu, pTau, lorentz.levitCivitaSymbol, lorentz.et, lorentz.et)
-		symmetricPart = 4. * math.einsum('ie,je->ije', pTau, pNu) \
-		              + 4. * math.einsum('ie,je->ije', pNu, pTau) \
-		              - 4. * math.einsum('ie,ie,i,kl->kle', pTau, pNu, lorentz.et, lorentz.eta)
+		# the momenta are the first operands of the einsums, such that the TensorFlow implementation is used for tensors;
+		# free indices m, n = mu, nu; contracted indices a, b = alpha, beta
+		# antisymmetric part: 4 i eps^{alpha beta mu nu} pNu_alpha pTau_beta with eps_{0123} = +1 (lorentz.epsilon), cf. Kuehn and Mirkes eq. (6)
+		antisymmetricPart = 4. * sign * math.einsum('ae,be,abmn,a,b->mne', pNu, pTau, lorentz.epsilon, lorentz.et, lorentz.et)
+		symmetricPart = 4. * math.einsum('me,ne->mne', pTau, pNu) \
+		              + 4. * math.einsum('me,ne->mne', pNu, pTau) \
+		              - 4. * math.einsum('ae,ae,a,mn->mne', pTau, pNu, lorentz.et, lorentz.eta)
 		return math.complex(symmetricPart, antisymmetricPart)
 
 	def getParticleSpinor(self, p: np.ndarray, isUp: np.ndarray, isPart: np.ndarray) -> np.ndarray:
