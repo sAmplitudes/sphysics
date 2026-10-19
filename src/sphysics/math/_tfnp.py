@@ -214,6 +214,21 @@ def sum(tensor, **kwargs):
 	else:
 		return np.sum(tensor, **kwargs)
 
+
+def any(tensor, **kwargs):
+	'''Tests whether any element of a tensor evaluates to True.
+
+    :param tensor: The input tensor
+    :type tensor: np.ndarray or tf.Tensor
+    :return: True if any element of the tensor is True, reduced along `axis` if given
+    :rtype: bool, np.ndarray or tf.Tensor
+    '''
+	if isinstance(tensor, tf.Tensor):
+		return tf.reduce_any(tf.cast(tensor, tf.bool), **kwargs)
+	else:
+		return np.any(tensor, **kwargs)
+
+
 def transpose(tensor, axes, **kwargs):
 	'''Transposes the dimensions of a tensor.
 
@@ -361,6 +376,20 @@ def copy(tensor, **kwargs):
 		return np.copy(tensor, **kwargs)
 
 
+def asarray(tensor, dtype=None):
+	''' Converts the input to a numpy array. A tf.Tensor is returned as a tensor.
+
+    :param tensor: The input, e.g. a scalar, a list, a np.ndarray or a tf.Tensor
+    :param dtype: Numpy data type of the returned array or tensor. If None, the data type is inferred from the input.
+    :return: The input as np.ndarray, or as tf.Tensor if the input is a tf.Tensor
+    :rtype: np.ndarray or tf.Tensor
+	'''
+	if isinstance(tensor, tf.Tensor):
+		return tensor if dtype is None else tf.cast(tensor, dtype)
+	else:
+		return np.asarray(tensor, dtype=dtype)
+
+
 def stack(tensors, **kwargs):
 	'''Packs a list of tensors along a new axis.
 
@@ -462,6 +491,22 @@ def where(condition: tf.Tensor|np.ndarray, x: tf.Tensor|np.ndarray, y: tf.Tensor
 		return tf.where(condition, x, y)
 	else:
 		return np.where(condition, x, y)
+
+def clip(tensor: tf.Tensor|np.ndarray, minValue, maxValue):
+	''' Limits the elements of a tensor to the interval [minValue, maxValue].
+
+    :param tensor: The input tensor
+    :type tensor: np.ndarray or tf.Tensor
+    :param minValue: Lower limit of the interval
+    :param maxValue: Upper limit of the interval
+    :return: Tensor with all elements limited to the interval
+    :rtype: np.ndarray or tf.Tensor
+	'''
+	if isinstance(tensor, tf.Tensor):
+		return tf.clip_by_value(tensor, minValue, maxValue)
+	else:
+		return np.clip(tensor, minValue, maxValue)
+
 
 def zeros_like(tensor: tf.Tensor|np.ndarray):
 	''' Returns a tensors with the same size as the input `tensor`. All elements are zero.

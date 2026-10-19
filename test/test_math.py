@@ -48,6 +48,42 @@ class MathTest(unittest.TestCase):
 		s = sphysics.math.divide(1.0+self._array_tf, self._array_tf, where=(self._array_tf!=0.), whereNotValue=20.)
 		self.assertAlmostEqual(s[0].numpy(), 20., 6)
 
+	def test_any(self):
+		self.assertTrue(sphysics.math.any(self._array_np > 4.))
+		self.assertFalse(sphysics.math.any(self._array_np > 6.))
+
+		s = sphysics.math.any(self._array_tf > 4.)
+		self.assertIsInstance(s, tf.Tensor)
+		self.assertTrue(bool(s.numpy()))
+		self.assertFalse(bool(sphysics.math.any(self._array_tf > 6.).numpy()))
+
+		mask = np.reshape(self._array_np, (10, 10)) > 4.
+		self.assertTrue(np.all(sphysics.math.any(mask, axis=1) == np.any(mask, axis=1)))
+		self.assertTrue(np.all(sphysics.math.any(tf.constant(mask), axis=1).numpy() == np.any(mask, axis=1)))
+
+	def test_clip(self):
+		s = sphysics.math.clip(self._array_np, 1., 4.)
+		self.assertIsInstance(s, np.ndarray)
+		self.assertAlmostEqual(sphysics.math.max(sphysics.math.abs(s-np.clip(self._array_np, 1., 4.))), 0., 6)
+
+		s = sphysics.math.clip(self._array_tf, 1., 4.)
+		self.assertIsInstance(s, tf.Tensor)
+		self.assertAlmostEqual(sphysics.math.max(sphysics.math.abs(s-np.clip(self._array_np, 1., 4.))).numpy(), 0., 6)
+
+	def test_asarray(self):
+		s = sphysics.math.asarray([0., 1., 2.], dtype=np.float64)
+		self.assertIsInstance(s, np.ndarray)
+		self.assertEqual(s.dtype, np.float64)
+		self.assertTrue(np.all(s == np.array([0., 1., 2.])))
+		self.assertEqual(sphysics.math.asarray(True, dtype=bool).dtype, np.bool_)
+
+		s = sphysics.math.asarray(self._array_tf)
+		self.assertIs(s, self._array_tf)
+		s = sphysics.math.asarray(self._array_tf, dtype=np.float32)
+		self.assertIsInstance(s, tf.Tensor)
+		self.assertEqual(s.dtype, tf.float32)
+		self.assertAlmostEqual(sphysics.math.max(sphysics.math.abs(s-self._array_np)).numpy(), 0., 5)
+
 	def test_min(self):
 		s = sphysics.math.min(self._array_np)
 		self.assertAlmostEqual(sphysics.math.max(sphysics.math.abs(s-np.min(self._array_np))), 0., 6)
