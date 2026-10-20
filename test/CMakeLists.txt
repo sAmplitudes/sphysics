@@ -11,7 +11,8 @@ set(_TESTS
     "variables"
     "utils"
     "polarimeter"
-    "omnesFunctions")
+    "omnesFunctions"
+    "KMatrixFormalism")
 
 foreach(_TEST ${_TESTS})
   add_test(NAME ${_TEST} COMMAND ${Python_EXECUTABLE}
