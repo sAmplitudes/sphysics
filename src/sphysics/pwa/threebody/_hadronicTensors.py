@@ -277,8 +277,12 @@ class Wave:
 		if len(parts) != 3:
 			log.raiseException(ValueError, f"Cannot parse wave label '{name}': expected the format '<J_X><P_X>_<isobar>_<L>', e.g. '1p_rho(770)[1m]_S'")
 		X, isobar, L = parts
-		if '[' in isobar:
-			isobarLabel, isobarQN = isobar.rstrip(']').split('[', 1)
+		if '[' in isobar or ']' in isobar:
+			isobarLabel, _, isobarQN = isobar.partition('[')
+			if not isobarLabel or not isobarQN.endswith(']'):
+				log.raiseException(ValueError, f"Cannot parse the isobar '{isobar}' in wave label '{name}': "
+				                               f"expected '<name>[<J><P>]', e.g. 'rho(770)[1m]'.")
+			isobarQN = isobarQN[:-1]
 		else:
 			isobarLabel, isobarQN = None, isobar
 		for quantumNumbers, system in ((X, 'X'), (isobarQN, 'isobar')):
@@ -286,6 +290,9 @@ class Wave:
 				log.raiseException(ValueError, f"Cannot parse the {system} quantum numbers '{quantumNumbers}' in wave label '{name}': "
 				                               f"expected '<J><P>' with P in {list(cls.chargeLabel)}, e.g. '1p'. "
 				                               f"Isobars must be given as e.g. 'rho(770)[1m]' or '1m'.")
+		if L not in _constants.Constants.spectroscopyMomentumNotation:
+			log.raiseException(ValueError, f"Cannot parse the orbital angular momentum '{L}' in wave label '{name}': "
+			                               f"expected one of {list(_constants.Constants.spectroscopyMomentumNotation)}.")
 		J_X, P_X = list(X)
 		J_isobar, P_isobar = list(isobarQN)
 		return cls(J_X, P_X, J_isobar, P_isobar, isobarLabel, L)

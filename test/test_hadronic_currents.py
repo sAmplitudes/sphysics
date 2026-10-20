@@ -201,7 +201,8 @@ class HadronicTensorsTest(unittest.TestCase):
 		self.assertEqual((wave.J_X, wave.P_X, wave.J_isobar, wave.P_isobar, wave.L), (0, -1, 2, 1, 2))
 		self.assertEqual(str(wave), '0m_f2(1270)[2p]_D')
 		self.assertEqual(str(Wave.fromString('wave_1m_1m_P')), '1m_1m_P')
-		for label in ['wave_1p_rho(770)_S', 'wave_1p_a1_S', '1p_1m', 'wave_1p_(pipi)_S[0p]_P', 'wave_1x_1m_S', 'wave_1p_rho(770)[1]_S']:
+		for label in ['wave_1p_rho(770)_S', 'wave_1p_a1_S', '1p_1m', 'wave_1p_(pipi)_S[0p]_P', 'wave_1x_1m_S', 'wave_1p_rho(770)[1]_S',
+		              'wave_1p_rho(770)[1m_S', 'wave_1p_rho(770)[1m]]_S', 'wave_1p_[1m]_S', 'wave_1p_1m_X', 'wave_1p_1m_s']:
 			with self.assertRaises(ValueError, msg=label):
 				Wave.fromString(label)
 
@@ -291,6 +292,10 @@ class Tau3PiModelTest(unittest.TestCase):
 		for flag in (True, np.True_):
 			self.assertAlmostEqual(_relDev(dirac.weakLepTensor_unpolarizedDecay(pTau, pNu, flag),
 			                               dirac.weakLepTensor_unpolarizedDecay(pTau, pNu, np.ones(self.nEvents, dtype=bool))), 0., 12)
+		# non-boolean flags, e.g. charges, are rejected instead of being silently cast to True
+		for flag in (np.where(self.isParticle, 1, -1), 1, 0.):
+			with self.assertRaises(ValueError, msg=repr(flag)):
+				dirac.weakLepTensor_unpolarizedDecay(pTau, pNu, flag)
 
 
 	def test_decayAmplitudes(self):
@@ -351,7 +356,7 @@ class Tau3PiModelTest(unittest.TestCase):
 
 	def test_antiparticleCurrents(self):
 		'''The tau+ current is the CP transform of the tau- current, J_+(p) = Lambda_P J_-(R p), for every wave:
-		only the vector-current wave changes sign relative to the tau- formula. The charge of every event must be known.'''
+		only the vector-current wave changes sign relative to the tau- formula. The charge of every event must be given as a boolean flag.'''
 		p1, p2, p3, _, _ = self.momenta
 		currentsMinus = self.model.calcHadronicCurrentsUnsymmetrized(p1, p2, p3)
 		currentsPlus = self.model.calcHadronicCurrentsUnsymmetrized(p1, p2, p3, isParticle=False)
@@ -366,6 +371,12 @@ class Tau3PiModelTest(unittest.TestCase):
 		events.pi1PM, events.pi2MP, events.pi3MP = p1, p2, p3
 		with self.assertRaises(ValueError):
 			self.model.calcHadronicCurrents(events)
+		# charges instead of boolean flags are rejected instead of being silently cast to True
+		events.isParticle = np.where(self.isParticle, 1, -1)
+		with self.assertRaises(ValueError):
+			self.model.calcHadronicCurrents(events)
+		with self.assertRaises(ValueError):
+			self.model.calcHadronicCurrentsUnsymmetrized(p1, p2, p3, isParticle=events.isParticle)
 
 
 	def test_decomposeHermitianMatrix(self):

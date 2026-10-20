@@ -111,7 +111,7 @@ class Formalism(object):
 		with :math:`\\epsilon_{0123} = +1`, i.e. :math:`\\epsilon^{0123} = -1` (convention of Kühn and Mirkes, see :data:`sphysics.lorentz.epsilon`),
 		and the upper (lower) sign for :math:`\\tau^-` (:math:`\\tau^+`) decays.
 		For :math:`\\tau^-` this is the unpolarized lepton tensor of Kühn and Mirkes, Z. Phys. C 56 (1992) 661, Eqs. (5) and (6),
-		with :math:`g_V = g_A = 1`, i.e. :math:`L^{1,\\mu\\nu} - L_{3,\\mu\\nu}` with the indices raised.
+		with :math:`g_V = g_A = 1`, i.e. :math:`L^{(1)}_{\\mu\\nu} - L^{(3)}_{\\mu\\nu}` with the indices raised.
 
 		Four-momenta are :math:`[E, p_x, p_y, p_z]` for every event. The four-momenta can be numpy arrays or TensorFlow tensors.
 
@@ -119,13 +119,17 @@ class Formalism(object):
 		:param pNu: Four-momenta of the final-state :math:`\\nu` or :math:`\\bar{\\nu}` of the shape (4, nEvents)
 		:param isParticle: True for :math:`\\tau^{-}` (particle) decays, False for :math:`\\tau^{+}` (antiparticle) decays,
 		                   for which the sign of the antisymmetric :math:`\\epsilon` term is reversed.
-		                   Scalar (Python or numpy bool) or array/tensor of the shape (nEvents,)
+		                   Boolean scalar (Python or numpy bool) or boolean array/tensor of the shape (nEvents,)
+		:raises ValueError: If `isParticle` is not boolean, e.g. an array of charges
 		"""
+		isParticle = math.asarray(isParticle)
+		if isParticle.dtype != bool:
+			raise ValueError(f"`isParticle` must be boolean (True for tau- and False for tau+ decays), but has the data type {isParticle.dtype}!")
 		# sign of the epsilon term: +1 for particle (tau-) decays, -1 for antiparticle (tau+) decays
 		if isinstance(pTau, tf.Tensor):
 			sign = 2.*tf.cast(isParticle, pTau.dtype) - 1.
 		else:
-			sign = np.where(np.asarray(isParticle, dtype=bool), 1., -1.)
+			sign = np.where(isParticle, 1., -1.)
 		# the momenta are the first operands of the einsums, such that the TensorFlow implementation is used for tensors;
 		# free indices m, n = mu, nu; contracted indices a, b = alpha, beta
 		# antisymmetric part: 4 i eps^{alpha beta mu nu} pNu_alpha pTau_beta with eps_{0123} = +1 (lorentz.epsilon), cf. Kuehn and Mirkes eq. (6)

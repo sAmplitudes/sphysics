@@ -163,13 +163,16 @@ class Tau2ThreeCharedPi(PWAModel):
 		:type events: EventsTau2ThreeChargedPi
 		:return: Hadronic currents of partial waves
 		:rtype: list
-		:raises ValueError: If ``events.isParticle`` is not given for all events
+		:raises ValueError: If ``events.isParticle`` is not given for all events or is not boolean
 		'''
 		nEvents = events.pi1PM.shape[-1]
-		isParticle = math.asarray(events.isParticle, dtype=bool)
+		isParticle = math.asarray(events.isParticle)
 		if isParticle.shape != (nEvents,):
 			log.raiseException(ValueError, f"`events.isParticle` must be given for all {nEvents} events (True for tau- and False for tau+ decays), "
 			                               f"but has the shape {isParticle.shape}!")
+		if isParticle.dtype != bool:
+			log.raiseException(ValueError, f"`events.isParticle` must be boolean (True for tau- and False for tau+ decays), "
+			                               f"but has the data type {isParticle.dtype}!")
 		#                                                   --------- isobar ---------
 		currents12 = self.calcHadronicCurrentsUnsymmetrized(events.pi1PM, events.pi2MP, events.pi3MP, isParticle)
 		currents13 = self.calcHadronicCurrentsUnsymmetrized(events.pi1PM, events.pi3MP, events.pi2MP, isParticle)
@@ -191,7 +194,9 @@ class Tau2ThreeCharedPi(PWAModel):
 		transformation, while vector currents (:math:`1^-`, built with the Levi-Civita tensor) are pseudo-vectors and change
 		sign relative to them. Together with the sign change of the :math:`\\epsilon` term of the leptonic tensor, this makes the
 		:math:`\\tau^+` intensity the CP mirror image of the :math:`\\tau^-` intensity for the same partial-wave couplings;
-		cf. Finkemeier and Mirkes, AIP Conf. Proc. 349 (1996) 119, Eq. (42), and Kühn and Mirkes, Phys. Lett. B 398 (1997) 407, Eq. (23).
+		cf. Finkemeier and Mirkes, AIP Conf. Proc. 349 (1996) 119, Eq. (42), where the structure functions arising from the
+		interference of the vector and axial-vector currents change sign for :math:`\\tau^+`. TAUOLA applies the same sign flip
+		to the vector current of :math:`\\tau^+` decays (subroutine PROD5).
 
 		The double reflection reduces to an overall sign for each wave: :math:`\\mathcal{R}p = \\Lambda_P p`, and :math:`\\Lambda_P` is an
 		(improper) Lorentz transformation with :math:`\\Lambda_P^2 = 1` and :math:`\\det\\Lambda_P = -1`. The hadronic tensors are
@@ -210,9 +215,13 @@ class Tau2ThreeCharedPi(PWAModel):
 		:param pi1PM: 4-momenta of the :math:`\\pi^{\\pm}` of the shape (4, nEvents)
 		:param pi2MP: 4-momenta of the first :math:`\\pi^{\\mp}` of the shape (4, nEvents), which forms the isobar with the :math:`\\pi^{\\pm}`
 		:param pi3MP: 4-momenta of the second :math:`\\pi^{\\mp}` of the shape (4, nEvents)
-		:param isParticle: True for :math:`\\tau^-` decays (default), False for :math:`\\tau^+` decays; scalar or array of the shape (nEvents,)
+		:param isParticle: True for :math:`\\tau^-` decays (default), False for :math:`\\tau^+` decays; boolean scalar or array of the shape (nEvents,)
+		:raises ValueError: If `isParticle` is not boolean, e.g. an array of charges
 		'''
-		isAntiparticle = ~math.asarray(isParticle, dtype=bool)
+		isParticle = math.asarray(isParticle)
+		if isParticle.dtype != bool:
+			log.raiseException(ValueError, f"`isParticle` must be boolean (True for tau- and False for tau+ decays), but has the data type {isParticle.dtype}!")
+		isAntiparticle = ~isParticle
 		if isAntiparticle.ndim == 1:
 			isAntiparticle = isAntiparticle[None, :]
 		reflect = np.array([1., -1., -1., -1.])[:, None] # Lambda_P: reverses the spatial components of a four-vector
