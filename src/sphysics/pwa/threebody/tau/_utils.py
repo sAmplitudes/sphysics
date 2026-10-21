@@ -24,8 +24,13 @@ class EventsTau2ThreeChargedPi(eventselection.VariablesBase):
 	'''
 	Events of the reaction :math:`\\tau^{\\mp} \\to \\pi^{\\pm} \\pi^{\\mp} \\pi^{\\mp} \\nu_\\tau`
 
-	pi1MP, pi2PM, pi3PM are ordered according to the reaction given above,
-	i.e. the first two pions have opposite charge and form the isobar system and the second and the last pions are exchanged for the bose symmetrization
+	The pion four-momenta ``pi1PM``, ``pi2MP``, ``pi3MP`` are ordered according to the reaction given above:
+	``pi1PM`` is the pion with the charge opposite to the :math:`\\tau` (:math:`\\pi^+` for :math:`\\tau^-`),
+	``pi2MP`` and ``pi3MP`` are the two pions with the charge of the :math:`\\tau`. The first two pions form the isobar system.
+	``tauMP`` and ``nu`` are the :math:`\\tau` and neutrino four-momenta (empty if unknown),
+	``isParticle`` is True for :math:`\\tau^-` and False for :math:`\\tau^+` decays, and ``tauMP_E`` and ``tauMP_M``
+	are the :math:`\\tau` energy and mass used to reconstruct the :math:`\\tau` momentum up to the angle
+	:math:`\\alpha` around the hadronic momentum.
 	'''
 	def __init__(self, tauMP_E:float=None, tauMP_M:float=None) -> None:
 		super().__init__()
