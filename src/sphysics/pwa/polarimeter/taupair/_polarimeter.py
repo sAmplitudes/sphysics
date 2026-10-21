@@ -25,7 +25,7 @@ def get_polarimeter_from_J(J: np.ndarray, isParticle: np.ndarray, pTau: np.ndarr
 	Comput. Phys. Comm. **64**, 275-295 (1991), `doi: 10.1016/0010-4655(91)90038-M <https://doi.org/10.1016/0010-4655(91)90038-M>`_.
 	"TAUOLA - a library of Monte Carlo programs to simulate decays of polarized τ leptons"
 	and
-	Comput. Phys. Comm. **245**, 109153 (2024), `doi: 10.1016/j.cpc.2024.109153 <https://doi.org/10.1016/j.cpc.2024.109153>`_.
+	Comput. Phys. Comm. **299**, 109153 (2024), `doi: 10.1016/j.cpc.2024.109153 <https://doi.org/10.1016/j.cpc.2024.109153>`_.
 	"The polarimeter vector for τ → 3π ν_τ decays"
 
 	The current and momenta have to be given in the proper reference frame.
