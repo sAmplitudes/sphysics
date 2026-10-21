@@ -99,11 +99,15 @@ class Wave:
 
 	@classmethod
 	def fromString(cls, name: str) -> 'Wave':
-		"""Construct a :class:`Wave` from its string label, e.g. ``'wave_1m'`` or ``'1m'``."""
-		name = name.lstrip('wave_')
-		if len(name) != 2:
-			log.raiseException(ValueError, f'Cannot parse wave name "{name}": expected format "<J><P>", e.g. "1m"')
-		J_X, P_X = list(name)
+		"""Construct a :class:`Wave` from its string label, e.g. ``'wave_1m'`` or ``'1m'``.
+
+		Raises:
+			ValueError: If the label is not of the form ``<J><P>`` with a digit ``J`` and ``P`` in ``m``/``p``, optionally prefixed by ``wave_``
+		"""
+		label = name[len('wave_'):] if name.startswith('wave_') else name
+		if len(label) != 2 or not label[0].isdigit() or label[1] not in cls.chargeLabel:
+			log.raiseException(ValueError, f"Cannot parse wave label '{name}': expected '<J><P>' with P in {list(cls.chargeLabel)}, e.g. '1m' or 'wave_1m'")
+		J_X, P_X = list(label)
 		return cls(J_X, P_X)
 
 	def __repr__(self) -> str:

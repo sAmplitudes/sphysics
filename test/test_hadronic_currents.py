@@ -22,6 +22,7 @@ from sphysics import lorentz
 from sphysics import Constants as C
 from sphysics.pwa.threebody import HadronicTensors
 from sphysics.pwa.threebody._hadronicTensors import Wave
+from sphysics.pwa.twobody._hadronicTensor import Wave as TwoBodyWave
 from sphysics.pwa.threebody import tau as tau3
 from sphysics.pwa.threebody.tau._utils import decomposeHermitianMatrix2
 from sphysics.amplitudes import resonance, LambdaF
@@ -205,6 +206,17 @@ class HadronicTensorsTest(unittest.TestCase):
 		              'wave_1p_rho(770)[1m_S', 'wave_1p_rho(770)[1m]]_S', 'wave_1p_[1m]_S', 'wave_1p_1m_X', 'wave_1p_1m_s']:
 			with self.assertRaises(ValueError, msg=label):
 				Wave.fromString(label)
+
+
+	def test_waveFromStringTwoBody(self):
+		'''Parsing of two-body wave labels.'''
+		for label in ['wave_1m', '1m']:
+			wave = TwoBodyWave.fromString(label)
+			self.assertEqual((wave.J_X, wave.P_X), (1, -1), msg=label)
+		self.assertEqual(str(TwoBodyWave.fromString('wave_0p')), '0p')
+		for label in ['wave_1', 'wave_1m_S', '1x', 'xm', 'wave__1m', 'wavewave_1m', '']:
+			with self.assertRaises(ValueError, msg=label):
+				TwoBodyWave.fromString(label)
 
 
 	def test_pickle(self):
