@@ -404,7 +404,8 @@ def getTauMomentumComponentsCMS(pHadron, tauE, tauM, orthoDirection = np.array([
 	:param pHadron: Hadronic four-momentum [E,px,py,pz] of the shape (4, nEvents)
 	:param tauE: Energy of the tauon
 	:param tauM: Mass of the tauon
-	:param orthoDirection: direction used to define the orthogonal coordinate system. It must not be (anti-)parallel to any hadron momentum.
+	:param orthoDirection: direction used to define the orthogonal coordinate system; its length is irrelevant.
+	                       It must not be (anti-)parallel to any hadron momentum.
 	:raises ValueError: If events are outside the kinematic limits of the :math:`\\tau` decay, i.e. :math:`|\\cos\\theta| > 1`
 	                    (beyond a rounding tolerance of :math:`10^{-12}`), e.g. due to the detector resolution.
 	                    Such events have to be removed before calculating the decay amplitudes.
@@ -412,6 +413,10 @@ def getTauMomentumComponentsCMS(pHadron, tauE, tauM, orthoDirection = np.array([
 	                    orthogonal components are undefined. If this happens, change the `orthoDirection` or implement handling of edge cases.
 	"""
 	orthoDirection = math.asarray(orthoDirection, dtype=np.float64)
+	orthoDirectionNorm = math.sqrt(math.sum(orthoDirection**2))
+	if orthoDirection.shape != (3,) or not orthoDirectionNorm > 0.:
+		log.raiseException(ValueError, f"`orthoDirection` must be a non-zero three-vector, but is {orthoDirection}!")
+	orthoDirection = orthoDirection/orthoDirectionNorm
 	tauAbsP = math.sqrt(tauE**2 - tauM**2)
 	hadE = pHadron[0]
 	hadAbsP = math.sqrt(math.sum(pHadron[1:4]**2, axis = 0))
@@ -438,7 +443,7 @@ def getTauMomentumComponentsCMS(pHadron, tauE, tauM, orthoDirection = np.array([
 	pTauOrtho1Unit   = math.empty(pHadron.shape, pHadron)
 	pTauOrtho1Unit[0]   = 0.
 	pTauOrtho1Unit[1:]  = np.cross(pTauParallelUnit[1:],orthoDirection, axis=0)
-	norm = math.sqrt(math.sum(pTauOrtho1Unit[1:]**2, axis = 0))
+	norm = math.sqrt(math.sum(pTauOrtho1Unit[1:]**2, axis = 0)) # sine of the angle between the hadron momentum and orthoDirection
 	# for hadron momenta (anti-)parallel to orthoDirection the cross product vanishes and the orthogonal components are undefined
 	degenerate = norm < 1e-10
 	if math.any(degenerate):

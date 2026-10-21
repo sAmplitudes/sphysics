@@ -427,6 +427,15 @@ class Tau3PiModelTest(unittest.TestCase):
 			tau3.getTauMomentumComponentsCMS(np.array([[3.5], [0.], [0.], [3.288]]), tauE, C.M.tau)
 		parallel, ortho1, ortho2 = tau3.getTauMomentumComponentsCMS(np.array([[3.5], [0.], [0.], [3.288]]), tauE, C.M.tau, orthoDirection=[1., 0., 0.])
 		self.assertTrue(np.all(np.isfinite(ortho1)) and np.all(np.isfinite(ortho2)))
+		# the length of the reference direction is irrelevant, only its direction matters
+		components = tau3.getTauMomentumComponentsCMS(pHadron, tauE, C.M.tau)
+		for scale in (1e-11, 1e11):
+			componentsScaled = tau3.getTauMomentumComponentsCMS(pHadron, tauE, C.M.tau, orthoDirection=[0., 0., scale])
+			for p, pScaled in zip(components, componentsScaled):
+				self.assertAlmostEqual(np.max(np.abs(pScaled - p)), 0., 10)
+		for orthoDirection in ([0., 0., 0.], [0., 0., 0., 1.], [1., 0.]):
+			with self.assertRaises(ValueError, msg=repr(orthoDirection)):
+				tau3.getTauMomentumComponentsCMS(pHadron, tauE, C.M.tau, orthoDirection=orthoDirection)
 
 
 	def test_tauMomentumComponentsAtKinematicLimit(self):
