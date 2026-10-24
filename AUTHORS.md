@@ -24,5 +24,6 @@ Weiskopf.
 - `data/amplitudes/K0K0barspinnolam.csv` and `KplusKminusspinnolam.csv`:
   triangle amplitude of the a1(1420), provided by the COMPASS Collaboration and
   published with permission, see Phys. Rev. Lett. 127, 082501 (2021).
-- `data/amplitudes/kpiS_Pelaez-Rodas_2010.11222.csv`: Kπ S-wave amplitude of J.
-  R. Peláez and A. Rodas, Phys. Rept. 969 (2022) 1 (arXiv:2010.11222).
+- `data/amplitudes/kpiS_Pelaez-Rodas_2010.11222.csv`: Kπ S-wave amplitude provided
+  by J. R. Peláez and A. Rodas, Phys. Rept. 969 (2022) 1 (arXiv:2010.11222).
+  Code: https://github.com/Hadron-Madrid-HadMad/HadMad.github

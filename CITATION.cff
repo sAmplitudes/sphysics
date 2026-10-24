@@ -7,6 +7,30 @@ authors:
   - family-names: Wallner
     given-names: Stefan
     orcid: https://orcid.org/0000-0002-9105-1625
+  - family-names: Bartl
+    given-names: Martin
+    orcid: https://orcid.org/0009-0002-7835-0855
+  - family-names: Beckers
+    given-names: Julien
+  - family-names: Fausch
+    given-names: Yannik
+  - family-names: Kurten
+    given-names: Godo
+    orcid: https://orcid.org/0009-0000-0553-7964
+  - family-names: Krinner
+    given-names: Fabian
+  - family-names: Perez-Orive
+    given-names: Claudia
+  - family-names: Reif
+    given-names: Markus
+    orcid: https://orcid.org/0000-0002-0706-0247
+  - family-names: Simo
+    given-names: Xavier
+  - family-names: Tittel
+    given-names: Oskar
+    orcid: https://orcid.org/0000-0001-9128-6240
+  - family-names: Weiskopf
+    given-names: Miriam
 doi: 10.5281/zenodo.23214121
 repository-code: https://github.com/sAmplitudes/sphysics
 url: https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics
