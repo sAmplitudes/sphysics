@@ -31,6 +31,21 @@ def get_polarimeter_from_J(J: np.ndarray, isParticle: np.ndarray, pTau: np.ndarr
 	The current and momenta have to be given in the proper reference frame.
 	The returned polarimeter vector is also defined in this frame.
 
+	Sign convention: the polarimeter vector :math:`h^\\mu` is defined covariantly through the spin dependence of the decay rate,
+
+	.. math:: \\mathrm{d}\\Gamma \\propto 1 + h_\\mu s^\\mu ,
+
+	where :math:`s^\\mu` is the spin four-vector of the decaying tau, cf. Eq. (4.2) of
+	Phys. Rev. D **109**, 032005 (2024), `doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>`_.
+	In the tau rest frame :math:`h^0 = 0` and hence :math:`h_\\mu s^\\mu = -\\vec{h} \\cdot \\vec{s}`, i.e. the three-vector spin analyser
+	:math:`\\vec{a}` of the rate :math:`1 + \\vec{a} \\cdot \\hat{s}` is :math:`\\vec{a} = -\\vec{h}`.
+	For example, for :math:`\\tau^- \\to \\pi^- \\nu_\\tau` the returned vector is :math:`\\vec{h} = -\\hat{p}_\\pi` although the pion is emitted
+	preferentially along the tau spin, and for :math:`\\tau^+ \\to \\pi^+ \\bar{\\nu}_\\tau` it is :math:`\\vec{h} = +\\hat{p}_\\pi`.
+	This is Eqs. (6)-(8) of Comput. Phys. Comm. **299**, 109153 (2024) evaluated with :math:`\\epsilon^{0123} = -1` (``lorentz.epsilon``),
+	where for :math:`\\tau^+` decays (``isParticle == False``) the terms proportional to the V-A coupling ratio reverse sign.
+	It coincides with the vector ``HV`` computed in TAUOLA's hadronic decay routines (e.g. ``DAMPPK``) for :math:`\\tau^-`; note that TAUOLA
+	hands the polarimeter vector to the host program with the opposite overall sign for both charges (``HHV = -ISGN*HV``).
+
 
 	:param J: Decay current with shape ``(4, events)``
 	:param isParticle: Boolean array indicating particle (True) vs antiparticle (False) with shape ``(events,)``
