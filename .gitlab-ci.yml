@@ -38,9 +38,10 @@ ci-image:
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     # the layer cache keeps the digests of unchanged layers, such that runner
-    # nodes only download the layers that changed
+    # nodes only download the layers that changed; cached layers expire after
+    # 90 days (default: 2 weeks), afterwards unpinned packages get updated
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
-      --build-arg=CI_JOB_TOKEN --cache=true --cache-repo=$CI_IMAGE/cache
+      --build-arg=CI_JOB_TOKEN --cache=true --cache-repo=$CI_IMAGE/cache --cache-ttl=2160h
       --destination $CI_IMAGE:$CI_COMMIT_SHORT_SHA --destination $CI_IMAGE:latest
 
 installable-static:
