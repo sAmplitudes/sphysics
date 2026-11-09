@@ -4,7 +4,7 @@
 
 sphysics provides tools designed for amplitude analysis, event selection, kinematic calculations, machine learning, and more.
 
-The documentation for sphysics can be accessed on [GitLab Pages](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics)
+The documentation for sphysics can be accessed on [Read the Docs](https://sphysics.readthedocs.io) and, with a DESY account, on [GitLab Pages](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics)
 
 Information on how to install and use sphysics can be found in the [Getting Started page](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics/gettingstarted.html)
 

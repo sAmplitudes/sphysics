@@ -91,6 +91,21 @@ pages:
   rules:
     - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/
 
+readthedocs:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/
+  # starts as soon as the documentation is built; the artifacts themselves are not needed here
+  needs:
+    - job: build_pages
+      artifacts: false
+  script:
+    # Read the Docs serves the artifacts of build_pages instead of building the documentation
+    # itself (see .readthedocs.yaml and ci/readthedocs.py); READTHEDOCS_TOKEN is a masked CI/CD
+    # variable of the project
+    - python ci/readthedocs.py trigger
+
+
 pre-commit:
   stage: check
   variables:
