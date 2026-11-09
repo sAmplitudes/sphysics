@@ -102,7 +102,8 @@ readthedocs:
   script:
     # Read the Docs serves the artifacts of build_pages instead of building the documentation
     # itself (see .readthedocs.yaml and ci/readthedocs.py); READTHEDOCS_TOKEN is a masked CI/CD
-    # variable of the project
+    # variable of the project (if it is protected, the version tags must be protected tags too,
+    # otherwise the variable is not available in tag pipelines)
     - python ci/readthedocs.py trigger
 
 

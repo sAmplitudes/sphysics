@@ -78,19 +78,55 @@ def gitlab_api(path: str, query: dict[str, str] | None = None) -> str:
     return url
 
 
-def gitlab_get(path: str, token: str | None, query: dict[str, str] | None = None):
+def gitlab_open(url: str, token: str | None):
+    """Open a GitLab API URL; exit with a diagnosis of the token if GitLab refuses the request."""
     headers = {"PRIVATE-TOKEN": token} if token else {}
     try:
-        with request(gitlab_api(path, query), headers) as resp:
-            return json.load(resp)
+        return request(url, headers)
     except urllib.error.HTTPError as err:
-        if err.code in (401, 404):
-            die(
-                f"GitLab API returned {err.code} for {GITLAB_URL}/{GITLAB_PROJECT} ({path}). "
-                "The project is private: GITLAB_TOKEN must be a valid token with the read_api scope "
-                "for the project, set as environment variable of the Read the Docs project."
-            )
-        raise
+        body = err.read().decode(errors="replace").strip()[:300]
+        print(f"ERROR: GitLab API returned HTTP {err.code} for {url}: {body}", file=sys.stderr)
+        hint = {
+            401: "The token is invalid, revoked, or expired.",
+            403: "The token lacks the read_api scope, or its role is too low: Guest cannot read the "
+            "pipelines and artifacts of a private project, Reporter can.",
+            404: f"The project {GITLAB_PROJECT} does not exist under this path or is not visible to "
+            "the token, e.g., an access token of another project or group, or a token of a user "
+            "who is not a member of the project.",
+        }.get(err.code)
+        if hint:
+            print(f"       {hint}", file=sys.stderr)
+        if token:
+            describe_token(token)
+        else:
+            print("       GITLAB_TOKEN is not set, but the project is private.", file=sys.stderr)
+        sys.exit(1)
+
+
+def describe_token(token: str) -> None:
+    """Print whom a GitLab token belongs to and its scopes, to diagnose access problems."""
+    headers = {"PRIVATE-TOKEN": token}
+    try:
+        with request(f"{GITLAB_URL}/api/v4/user", headers) as resp:
+            user = json.load(resp)
+        print(f"       The token belongs to the user {user.get('username')!r} ({user.get('name')}).", file=sys.stderr)
+    except (urllib.error.URLError, ValueError):
+        print("       The user of the token cannot be determined (GET /user failed).", file=sys.stderr)
+    try:
+        with request(f"{GITLAB_URL}/api/v4/personal_access_tokens/self", headers) as resp:
+            info = json.load(resp)
+        print(
+            f"       Token {info.get('name')!r}: scopes {info.get('scopes')}, active {info.get('active')}, "
+            f"expires {info.get('expires_at')}.",
+            file=sys.stderr,
+        )
+    except (urllib.error.URLError, ValueError):
+        pass
+
+
+def gitlab_get(path: str, token: str | None, query: dict[str, str] | None = None):
+    with gitlab_open(gitlab_api(path, query), token) as resp:
+        return json.load(resp)
 
 
 def fetch() -> None:
@@ -124,8 +160,7 @@ def fetch() -> None:
 
     with tempfile.TemporaryDirectory() as tmp:
         archive = Path(tmp) / "artifacts.zip"
-        headers = {"PRIVATE-TOKEN": token} if token else {}
-        with request(gitlab_api(f"jobs/{job['id']}/artifacts"), headers) as resp, archive.open("wb") as f:
+        with gitlab_open(gitlab_api(f"jobs/{job['id']}/artifacts"), token) as resp, archive.open("wb") as f:
             shutil.copyfileobj(resp, f)
         info(f"Downloaded the artifacts ({archive.stat().st_size / 1e6:.1f} MB)")
         with zipfile.ZipFile(archive) as zf:
