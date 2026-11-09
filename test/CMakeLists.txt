@@ -9,7 +9,8 @@ set(_TESTS
     "kinematics"
     "variables"
     "utils"
-    "polarimeter")
+    "polarimeter"
+    "omnesFunctions")
 
 foreach(_TEST ${_TESTS})
   add_test(NAME ${_TEST} COMMAND ${Python_EXECUTABLE}

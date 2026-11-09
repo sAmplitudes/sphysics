@@ -35,6 +35,12 @@ Documentation
    conventions
    contributing
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Examples:
+
+   notebooks/omnes_pipiS_I2
+
 
 Citing sphysics
 ---------------

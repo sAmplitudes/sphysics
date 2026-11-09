@@ -22,7 +22,7 @@ RUN pip install 'tensorflow==2.21.0' tensorflow_probability tf-keras torchmetric
 COPY pyproject.toml /tmp/pyproject.toml
 RUN python -c "import tomllib; p = tomllib.load(open('/tmp/pyproject.toml', 'rb')); print('\n'.join(p['build-system']['requires'] + p['project']['dependencies'] + p['project']['optional-dependencies']['test']))" > /tmp/requirements.txt \
  && pip install -r /tmp/requirements.txt setuptools_scm \
-    pylint==4.0.6 pylint-gitlab==2.1.1 pre-commit build twine sphinx-book-theme sphinx_rtd_theme \
+    pylint==4.0.6 pylint-gitlab==2.1.1 pre-commit build twine sphinx-book-theme sphinx_rtd_theme myst-nb \
  && rm /tmp/pyproject.toml /tmp/requirements.txt
 
 # the job token is only valid while the image-build job is running
