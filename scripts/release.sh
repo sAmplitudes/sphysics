@@ -156,6 +156,6 @@ unexpected="$(unexpected_github_refs "${github_refs}")"
 github_web="https://github.com/$(sed -E 's#^(git@github\.com:|https://github\.com/)##; s#\.git$##' <<<"${GITHUB_URL}")"
 echo
 info "Released sphysics ${version}."
-echo "The tag pipeline on GitLab deploys the documentation and the package."
+echo "The tag pipeline on GitLab deploys the documentation to GitLab Pages and Read the Docs and publishes the package."
 echo "To archive the version on Zenodo, create a GitHub release for tag ${version}:"
 echo "  ${github_web}/releases/new?tag=${version}"
