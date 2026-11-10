@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Monday 30 01 2023
+:Description: Dalitz-plot models for decays of a pseudoscalar into three pseudoscalars, e.g., B → K π π0, their normalization integrals, and generator weights
 '''
 
 #pylint: disable=unused-import

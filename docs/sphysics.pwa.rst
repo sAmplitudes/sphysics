@@ -1,5 +1,5 @@
-Pwa
-===
+Partial-wave analysis
+=====================
 
 .. toctree::
    :maxdepth: 2

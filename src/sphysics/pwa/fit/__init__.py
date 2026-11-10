@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Tuesday 29 03 2022
+:Description: Fitting of partial-wave models and handling of the fit results
 '''
 
 #pylint: disable=unused-import

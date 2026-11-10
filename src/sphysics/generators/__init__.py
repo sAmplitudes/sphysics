@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Monday 14 03 2022
+:Description: Phase-space generators for two-body and n-body decays and for tau decays
 '''
 
 #pylint: disable=unused-import

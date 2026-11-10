@@ -1,6 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
+:Description: Mixins for learning-rate schedulers of Lightning modules
 '''
 
 #pylint: disable=unused-import

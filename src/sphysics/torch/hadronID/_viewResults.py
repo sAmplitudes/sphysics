@@ -58,7 +58,7 @@ def calcEffSH(species, hypothesis, isSpecies, probRatios, threshold, sWeights,
 
 def calcEffMissid(model,
                   nThresholds=2000):
-	"""Calculate the efficiencies and missedintification rates.
+	"""Calculate the efficiencies and misidentification rates.
 
 	Args:
 		model: Model to evaluate
@@ -105,7 +105,7 @@ def calcEffMissidAndPerformanceHists(model,
                   missIDSpecies=('pi', 'K'),
                   quiet=False,
                   nThresholds=2000):
-	"""Calculate the efficiencies, missedintification ranges and 1D and 2D performance bins
+	"""Calculate the efficiencies, misidentification ranges and 1D and 2D performance bins
 
 	Args:
 		model: Model to evaluate
@@ -541,7 +541,7 @@ def plotROC(models2compare,
 	:type syscorrfw_roc: dict or None, optional
 	:param species: The particle species, defaults to 'K'
 	:type species: str, optional
-	:param missidSpecies: The particle species that is missidentified, defaults to 'pi'
+	:param missidSpecies: The particle species that is misidentified, defaults to 'pi'
 	:type missidSpecies: str, optional
 	:param ylim: Set limits of y-axis, defaults to None
 	:type ylim: tuple of float, optional
@@ -609,7 +609,7 @@ def plotROCRatios(models2compare,
 	:type syscorrfw_roc: dict or None, optional
 	:param species: The particle species, defaults to 'K'
 	:type species: str, optional
-	:param missidSpecies: The particle species that is missidentified, defaults to 'pi'
+	:param missidSpecies: The particle species that is misidentified, defaults to 'pi'
 	:type missidSpecies: str, optional
 	:param ylim: Set limits of y-axis, defaults to None
 	:type ylim: tuple of float, optional

@@ -2,7 +2,7 @@
 '''
 :Author: Stefan Wallner
 
-:Description: Created on Thursday 03 11 2022
+:Description: Centrifugal-barrier factors and their compensation factors
 '''
 
 #pylint: disable=unused-import

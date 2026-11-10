@@ -3,7 +3,7 @@
 Using sphysics
 ==============
 
-This module can be installed using pip (See Getting Started).
+sphysics is a Python package that is installed with pip, see below.
 Within your Python environment, where you installed sphysics, you can use it with:
 
 .. code-block:: python
@@ -17,14 +17,14 @@ Getting Started
 In order to use sphysics, please follow these steps:
 
 1. Clone the repository.
-2. *(Optional)* Set the SPHYSICS_PARTICLEDATATABLE to the path where your particle data table is stored.
-   You can obtain the particle data table file from the data folder, for example:
+2. *(Optional)* Set the environment variable ``SPHYSICS_PARTICLEDATATABLE`` to the path of your particle data table.
+   Particle data tables are available in the ``data/particleDatatable`` directory of the repository, for example:
 
    .. code-block:: bash
 
-      export SPHYSICS_PARTICLEDATATABLE="$SPHYSICS/data/particleDatatable/particleDataTable2022.txt"
+      export SPHYSICS_PARTICLEDATATABLE="/path/to/sphysics/data/particleDatatable/particleDataTable2022.txt"
 
-   This step is optional as sphysics automatically uses particleDataTable2022.txt .
+   This step is optional as sphysics automatically uses particleDataTable2022.txt.
 3. Set up your development environment with the Python version that you want to use.
 4. You can install sphysics by executing:
 
@@ -70,7 +70,7 @@ Comments
 
   .. code-block:: bash
 
-     pip install pybind11 scikit-build-core 'cmake>=3.18' pyproject_metadata setuptools_scm tensorflow pathspec
+     pip install pybind11 scikit-build-core 'cmake>=3.18' pyproject_metadata setuptools_scm 'tensorflow<2.22' pathspec
 
   Then, install sphysics via:
 

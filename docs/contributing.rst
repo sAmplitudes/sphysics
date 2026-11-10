@@ -1,9 +1,9 @@
 .. _contributing:
 
 Contributing and Developing
-============
+===========================
 
-The development of sphysics is carried out at the Belle2 GitLab repository (https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics).
+The development of sphysics is carried out at the Belle II GitLab repository (https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics).
 
 To include your changes, please follow these steps:
 
@@ -36,7 +36,7 @@ pre-commit, which is required for this, is part of the ``dev`` extra, i.e. it ca
 
 
 
-Install development mode
+Installing in development mode
 -------------------------------------
 To install it in development mode (editable install), execute:
 
@@ -45,7 +45,7 @@ To install it in development mode (editable install), execute:
    pip install --editable .
 
 In this way, the source files are not copied to the virtual environment but linked.
-Hence, changes in the source files directly reflect in the virtual environment.
+Hence, changes in the source files are directly reflected in the virtual environment.
 Changes in the C++ files will be reflected **only after recompiling the C++ code via pip install**.
 
 
@@ -62,7 +62,7 @@ in the base folder of this repository.
 Without a version, the patch number of the latest version is increased by one.
 The local ``main`` branch must be identical to the ``main`` branch on GitLab.
 After checking that ``main`` contains only the public history, the script shows a summary and asks for confirmation.
-It then tags ``main`` with the version, pushes the tag to GitLab, where the CI deploys the documentation and the package, and pushes ``main`` and only this tag to the public GitHub repository (https://github.com/sAmplitudes/sphysics).
+It then tags ``main`` with the version, pushes the tag to GitLab, where the CI deploys the documentation to GitLab Pages and Read the Docs and publishes the package, and pushes ``main`` and only this tag to the public GitHub repository (https://github.com/sAmplitudes/sphysics).
 Other branches and tags are never pushed to GitHub.
 With ``--dry-run``, the script only runs the checks and shows what it would do.
 

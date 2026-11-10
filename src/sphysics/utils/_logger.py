@@ -45,34 +45,6 @@ class Logger:
 	and dynamic formatting for console logs. The class is designed to handle multi-threaded
 	logging and offers various logging levels (debug, info, warning, error, critical) with
 	optional color-coded output.
-
-	Attributes:
-		sphysicsRoot (logging.Logger): Root logger for the sphysics application.
-		cliHandlerStdout (logging.StreamHandler): Handler for stdout logs.
-		cliHandlerStderr (logging.StreamHandler): Handler for stderr logs.
-
-	Methods:
-		setCLILevel: Sets the logging level for CLI output.
-		printTimeStamp: Toggles the inclusion of timestamps in CLI logs.
-		incrementIndent: Increases the indentation level for the current thread.
-		decrementIndent: Decreases the indentation level for the current thread.
-		indented: Context manager for temporary indentation.
-		setLevel: Sets the logging level for the logger instance.
-		debug: Logs a message with DEBUG level.
-		info: Logs a message with INFO level.
-		emph: Logs a message with INFO level and blue color.
-		success: Logs a message with INFO level and green color.
-		warning: Logs a message with WARNING level.
-		error: Logs a message with ERROR level.
-		critical: Logs a message with CRITICAL level and exits the program.
-		raiseException: Logs a critical error and raises an exception.
-		_log: Internal method to log messages with optional color and indentation.
-		printLine: Logs a line of repeated characters.
-		initProgress: Initializes a progress bar for tracking tasks.
-		updateProgress: Updates the progress bar with completed tasks.
-		finishProgress: Marks the progress bar as complete.
-		printProgress: Prints the current progress bar state.
-		printFinishProgress: Prints a completion message for the progress bar.
 	"""
 
 	_formatString = "{color}[{levelname}: %(name)-{namewidth}.{namewidth}s{time}] %(message)-{messagewidth}s{colorend}"  # color, namewidth, messagewidth, time, colorend
@@ -82,8 +54,11 @@ class Logger:
 	_cliLineWidth = None
 	_cliLevelnameShort = True
 
+	#: Root logger for the sphysics application.
 	sphysicsRoot = None
+	#: Handler for stdout logs.
 	cliHandlerStdout = logging.StreamHandler(sys.stdout)
+	#: Handler for stderr logs.
 	cliHandlerStderr = logging.StreamHandler(sys.stderr)
 
 	_currentLevel = {'MainThread': 0}

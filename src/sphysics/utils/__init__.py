@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Tue 15 Oct 2019 03:38:30 PM CEST
+:Description: Logging, timing, PDG rounding, and loading of ROOT trees into polars data frames
 '''
 
 from __future__ import absolute_import

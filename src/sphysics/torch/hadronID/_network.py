@@ -30,7 +30,7 @@ def variables2Dataset(classId: int, variables: VariablesBase, inputVariables: li
 		device (torch.device, optional): Device on which the tensors are initialized. Defaults to None.
 
 	Returns:
-		TensorDataset: Dataset to be used for taining
+		TensorDataset: Dataset to be used for training
 	"""
 	dataInput  = np.empty((0, len(inputVariables)))
 	dataLabels = np.empty((0, ), dtype=int)
@@ -75,7 +75,7 @@ def multipleVariables2Dataset(classIds: list[int], multipleVariables: list[Varia
 		device (torch.device, optional): Device on which the tensors are initialized. Defaults to None.
 
 	Returns:
-		TensorDataset: Dataset to be used for taining
+		TensorDataset: Dataset to be used for training
 	"""
 
 	datasetFull = None

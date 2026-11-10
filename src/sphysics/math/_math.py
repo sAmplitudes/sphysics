@@ -33,7 +33,7 @@ def zeroBelowZero(value):
 def sqrt(value, where=None, whereNotValue=None):
 	'''	Calculates the square root of `value`.
     If `where` is given, calculate the square root only where `where` is True,
-    all other elements will be set to `whereNotValue` (in contrast to numpy's where, where the values remain uninitialize).
+    all other elements will be set to `whereNotValue` (in contrast to numpy's where, where the values remain uninitialized).
     `whereNotValue` cannot be a tf.Tensor
 
     :param value: The input tensor
@@ -97,7 +97,7 @@ def divide(numerator: _np.ndarray|_tf.Tensor, denominator: _np.ndarray|_tf.Tenso
 
     Calculate numerator / denominator.
     If `where` is given, calculate the fraction only where `where` is True,
-    all other elements will be set to `whereNotValue` (in contrast to numpy's `where`, where the values remain uninitialize).
+    all other elements will be set to `whereNotValue` (in contrast to numpy's `where`, where the values remain uninitialized).
     `whereNotValue` cannot be a tf.Tensor
 
     :param numerator: The numerator of the division.

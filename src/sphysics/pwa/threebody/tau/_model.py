@@ -204,7 +204,7 @@ class Tau2ThreeCharedPi(PWAModel):
 		:param tau: 4-momentum of the tau
 		:param nu: 4-momentum of the neutrino
 		:param upTau: Helicity of the :math:`\\tau` is up, the helicity of the neutrino is always down for :math:`\\tau^-` decays and up for :math:`\\tau^+` decays
-		:param isParticle: Bool array, which is True for :math:`\\tau^-` decause and false for :math:`\\tau^+` decays
+		:param isParticle: Bool array, which is True for :math:`\\tau^-` decays and false for :math:`\\tau^+` decays
 		'''
 		leptonicCurrent = math.empty(tau.shape, tau, dtype=np.complex128)
 		leptonicCurrent[:,isParticle] = self._dirac.weakLepCurr_particledecay(tau[:,isParticle], nu[:,isParticle], upTau=upTau, upNu=False)

@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Tuesday 14 06 2022
+:Description: Physics constants and particle properties
 '''
 
 #pylint: disable=unused-import

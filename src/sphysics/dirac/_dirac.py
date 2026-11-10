@@ -121,7 +121,7 @@ class Formalism(object):
 
 	def getParticleSpinor(self, p: np.ndarray, isUp: np.ndarray, isPart: np.ndarray) -> np.ndarray:
 		"""
-		Produces the spinors for particles in the Wely representation.
+		Produces the spinors for particles in the Weyl representation.
 		One method for particles AND antiparticles
 		@param p      four momenta as np.array with indices [m,e], where e = event index m = [E,x,y,z]
 		@param isUp   flag, whether the spinor has helicity up
@@ -144,7 +144,7 @@ class Weyl(Formalism):
 	def getParticleSpinor_faib(self, p: np.ndarray, isUp: np.ndarray, isPart: np.ndarray) -> np.ndarray:
 		"""
 		Original function from Fabian. Potentially wrong definition of anti-particle spinors
-		Produces the spinors for particles in the Wely representation.
+		Produces the spinors for particles in the Weyl representation.
 		One method for particles AND antiparticles
 
 		:param p: Four momenta as np.array with indices [m,e], where e = event index, m = [E, x, y, z]
@@ -204,7 +204,7 @@ class Weyl(Formalism):
 
 	def getParticleSpinor(self, p: np.ndarray, isUp: np.ndarray, isPart: np.ndarray) -> np.ndarray:
 		"""
-		Produces the spinors for particles in the Wely representation.
+		Produces the spinors for particles in the Weyl representation.
 		One method for particles AND antiparticles
 
 		The spinors are normalized such that :math:`u_i \\cdot u_j = 2 m \\delta_{ij}`

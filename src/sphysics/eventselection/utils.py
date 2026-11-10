@@ -2,7 +2,7 @@
 '''
 :Author: Stefan Wallner
 
-:Description: Created on Friday 19 05 2023
+:Description: Luminosity weights, tables of event numbers and efficiencies, and threshold scans
 '''
 
 #pylint: disable=unused-import

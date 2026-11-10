@@ -2,7 +2,7 @@
 '''
 :Author: Stefan Wallner
 
-:Description: Created on Tue 15 Oct 2019 03:38:30 PM CEST
+:Description: Mathematical functions that accept NumPy as well as TensorFlow arguments
 '''
 
 # pylint: disable=redefined-builtin

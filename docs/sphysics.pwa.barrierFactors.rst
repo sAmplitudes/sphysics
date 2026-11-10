@@ -1,5 +1,5 @@
-Barrierfactors
-==============
+Barrier factors
+===============
 
 Module contents
 ---------------

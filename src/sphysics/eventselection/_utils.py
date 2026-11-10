@@ -116,7 +116,7 @@ def thresholdScan(
 		sample (Variables): Data sample
 		cutFunction (function): Cut function with signature (sample, threshold) -> cutMask, which determine the cut mask for a given threshold
 		thresholds (int|np.ndarray,np.ndarray): List of thresholds to test (in increasing order) or number of thresholds points.
-			If it is a number of threshold points, a heuristik tries to find the threshold to cover the
+			If it is a number of threshold points, a heuristic tries to find the threshold to cover the
 			ROC curve as good as possible. The actual number of thresholds can be slightly different from
 			the given number of thresholds due to rounding effects.
 
@@ -127,7 +127,7 @@ def thresholdScan(
 
 	Returns:
 		   - list of thresholds
-		   - list of efficiences
+		   - list of efficiencies
 		   - dict of lists of impurities for each channel
 		   - list of purities, i.e. 1-sum(impurities)
 		   - list of miss-id rates for the channels, i.e. efficiency of the non-signal channels
@@ -205,7 +205,7 @@ def pidHist(distributions: Union[Sequence[np.ndarray],np.ndarray], pid2Name: dic
 
 	Args:
 		distributions (Union[Sequence[np.ndarray],np.ndarray]): List if input arrays with ids
-		pid2Name (dict, optional): Dictionary, that mapes the ids to names for printing of the tables. Defaults to None.
+		pid2Name (dict, optional): Dictionary, that maps the ids to names for printing of the tables. Defaults to None.
 		headers (Sequence[str], optional): Headline of table column, one for each input array. Defaults to None.
 		sortyByCount (bool, optional): Sort rows by count of hist distribution not by id. Defaults to False.
 		weights (Union[Sequence[np.ndarray],np.ndarray], optional): Weight for entries, i.e. each entry counts for w instead of 1. Defaults to None.

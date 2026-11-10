@@ -7,7 +7,6 @@ sphysics
 .. toctree::
    :maxdepth: 1
 
-   sphysics._constants
    sphysics.amplitudes
    sphysics.dirac
    sphysics.eventselection

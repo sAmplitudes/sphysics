@@ -1,6 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
+:Description: Lightning modules for training, learning-rate schedulers, and plotting of metrics
 '''
 
 #pylint: disable=unused-import

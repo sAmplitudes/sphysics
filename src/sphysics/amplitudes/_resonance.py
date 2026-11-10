@@ -92,7 +92,7 @@ def breitWignerAlternativeDynwidthS(s, m1, m2, L, m0, g0, breakupMomScale = Cons
 
 	.. math:: \\Gamma(s) = \\frac{\\sqrt{s}}{m_0} \\Gamma_\\mathrm{std}(s)
 
-	This amplitude is sometimes used for the :math:`\\rho(770)` parameterization (see Pitsu and Ross [10.1016/0550-3213(68)90001-1])
+	This amplitude is sometimes used for the :math:`\\rho(770)` parameterization (see Pišút and Roos [10.1016/0550-3213(68)90001-1])
 
 	:param s: Mass squared at which the Breit-Wigner should be evaluated
 	:param m1: Mass of the first particle of the channel considered in the dynamic width
@@ -300,7 +300,7 @@ __gounariSakkuraiFirstCallWithUnequalMasses = True
 def gounariSakuraiFS(s: float|np.ndarray, m1: float|np.ndarray, m2: float|np.ndarray,
                    m0: float|np.ndarray, g0: float|np.ndarray) -> float|np.ndarray:
 
-	"""Real part of the self energy of the Gounari Sakurai amplitude (f function)
+	"""Real part of the self energy of the Gounaris-Sakurai amplitude (f function)
 
 	:param s: Invariant mass squared of the decaying system
 	:param m1: Mass of the first final-state particle
@@ -311,7 +311,7 @@ def gounariSakuraiFS(s: float|np.ndarray, m1: float|np.ndarray, m2: float|np.nda
 
 	global __gounariSakkuraiFirstCallWithUnequalMasses # pylint: disable=global-statement
 	if m1 != m2 and __gounariSakkuraiFirstCallWithUnequalMasses:
-		log.warning("Gounari Sakurai amplitude valid only for final-state particles equal masses, but you are calling it with unequal masses. Using average mass at the moment.")
+		log.warning("Gounaris-Sakurai amplitude valid only for final-state particles equal masses, but you are calling it with unequal masses. Using average mass at the moment.")
 		__gounariSakkuraiFirstCallWithUnequalMasses = False
 
 
@@ -340,7 +340,7 @@ def gounariSakuraiFS(s: float|np.ndarray, m1: float|np.ndarray, m2: float|np.nda
 
 def gounariSakuraiS(s: float|np.ndarray, m1: float|np.ndarray, m2: float|np.ndarray, L: int,
                    m0: float|np.ndarray, g0: float|np.ndarray, qR: float = Constants.barrierFactorMomentumscale) -> float|np.ndarray:
-	"""Gounari-Sakurai resonance parameterization
+	"""Gounaris-Sakurai resonance parameterization
 
 	This parameterization is taken from eq. (17) in Z.Phys.C (1997) 15, 76 (DOI: 10.1007/s002880050523) and following equations.
 
@@ -388,7 +388,7 @@ def gounariSakuraiS(s: float|np.ndarray, m1: float|np.ndarray, m2: float|np.ndar
 def gounariSakuraiAlternativeDynwidthS(s: float|np.ndarray, m1: float|np.ndarray, m2: float|np.ndarray, L: int,
                    m0: float|np.ndarray, g0: float|np.ndarray, qR: float = Constants.barrierFactorMomentumscale) -> float|np.ndarray:
 	"""
-	Gounari-Sakurai resonance parameterization with an alternative dynamic width
+	Gounaris-Sakurai resonance parameterization with an alternative dynamic width
 
 	The dynamic-width parameterization is
 
@@ -399,7 +399,7 @@ def gounariSakuraiAlternativeDynwidthS(s: float|np.ndarray, m1: float|np.ndarray
 		:math:`\\Gamma(s) = \\frac{\\sqrt{s}}{m_0} \\Gamma_\\mathrm{std}(s)`
 
 	This amplitude is sometimes used for the :math:`\\rho(770)` parameterization
-	(see Pitsu and Ross [10.1016/0550-3213(68)90001-1]).
+	(see Pišút and Roos [10.1016/0550-3213(68)90001-1]).
 
 	This parameterization is taken from Eq. (17) in *Z. Phys. C* (1997) **15**, 76
 	(DOI: `10.1007/s002880050523 <https://doi.org/10.1007/s002880050523>`_) and following equations.
@@ -450,7 +450,7 @@ def gounariSakuraiAlternativeDynwidthS(s: float|np.ndarray, m1: float|np.ndarray
 def gounariSakurai(mass: float|np.ndarray, m1: float|np.ndarray, m2: float|np.ndarray, L: int,
                    m0: float|np.ndarray, g0: float|np.ndarray, qR: float = Constants.barrierFactorMomentumscale) -> float|np.ndarray:
 	"""
-	Gounari-Sakurai resonance parameterization
+	Gounaris-Sakurai resonance parameterization
 
 	This parameterization is taken from Eq. (17) in *Z. Phys. C* (1997) **15**, 76
 	DOI: `10.1007/s002880050523 <https://doi.org/10.1007/s002880050523>`_ and following equations.

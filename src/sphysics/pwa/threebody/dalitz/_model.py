@@ -89,7 +89,7 @@ class PTo3P(PWAModel):
 		Args:
 			waveName (str): Name of the wave
 			hadronicTensorName (str): Name of the hadronic tensor in the DalitzAmplitudes3p_Zemach formalism
-			dynamicIsobarAmplitude (Callable): Isobar-mass dependence of the isobar dynamci amplitude, e.g. Breit Wigner amplitude
+			dynamicIsobarAmplitude (Callable): Isobar-mass dependence of the isobar dynamic amplitude, e.g. Breit Wigner amplitude
 			isobarSystem (str): Name of the isobar system is given in `isobarSystemNames`
 			Jisobar (int): Spin of the isobar
 			m0Isobar (float): Nominal mass of the isobar for the normalization of the angular momentum barrier factors

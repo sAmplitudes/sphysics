@@ -64,7 +64,7 @@ class DalitzAmplitudes3P_Zemach(Kinematics):
 	def wave_0m_3m_F(self) -> np.ndarray:
 		'''
 		Amplitude for wave :math:`0^- \\to [ (12)_3^- (3) ]_F`
-		Zeemach tensor form from `LHCb amplitude analysis paper <https://cds.cern.ch/record/2205214/files/LHCB-PAPER-2016-026.pdf>`_.
+		Zemach tensor form from `LHCb amplitude analysis paper <https://cds.cern.ch/record/2205214/files/LHCB-PAPER-2016-026.pdf>`_.
 		Translation to mass dep. term from `The Physics of B Factories <https://arxiv.org/pdf/1406.6311>`_ on page 169.
 		'''
 		abs_pq_sq = 1/2*(( self.m12**2-2.*self.m123**2-2.*self.m3**2 + (self.m123**2-self.m3**2)**2/self.m12**2)   \
@@ -76,7 +76,7 @@ class DalitzAmplitudes3P_Zemach(Kinematics):
 	def wave_0m_4p_G(self) -> np.ndarray:
 		'''
 		Amplitude for wave :math:`0^- \\to [ (12)_4^+ (3) ]_G`
-		Zeemach tensor form from `Wigner D-Matrix <https://en.wikipedia.org/wiki/Wigner_D-matrix>`_ and
+		Zemach tensor form from `Wigner D-Matrix <https://en.wikipedia.org/wiki/Wigner_D-matrix>`_ and
 		`Jacobi Polynomials <https://en.wikipedia.org/wiki/Jacobi_polynomials>`_ with :math:`j=4, m'=m=0`.
 		Prefactor is an educated guess. Prefactor does not matter, since wave is normalized.
 		Prefactors of previous waves follow

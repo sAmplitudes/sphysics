@@ -1,5 +1,5 @@
-Threebody
-=========
+Three-body decays
+=================
 
 Subpackages
 -----------

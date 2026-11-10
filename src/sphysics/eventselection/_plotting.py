@@ -395,7 +395,7 @@ def thresholdScanPlots(
 	Returns:
 		tuple[np.ndarray, np.ndarray, dict,, np.ndarray modernplotting.mpplot.MPPlot1DTwin, modernplotting.mpplot.MPPlot1D]:
 		   - list of thresholds
-		   - list of efficiences
+		   - list of efficiencies
 		   - dict of lists of impurities for each channel
 		   - list of purities, i.e. 1-sum(impurities)
 		   - efficiency plot

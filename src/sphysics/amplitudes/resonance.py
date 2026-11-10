@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Nov 7, 2019
+:Description: Breit-Wigner, Gounaris-Sakurai, Flatté, and LASS amplitudes, S-wave parameterizations, the K-matrix formalism, and the a1(1420) triangle amplitude
 '''
 
 # pylint: disable=unused-import

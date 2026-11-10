@@ -1,5 +1,5 @@
-Hadronid
-========
+Hadron ID
+=========
 
 Module contents
 ---------------

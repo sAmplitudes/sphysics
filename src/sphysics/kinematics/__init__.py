@@ -2,7 +2,7 @@
 '''
 :Author: Stefan Wallner
 
-:Description: Created on Monday 14 03 2022
+:Description: Break-up momenta, phase-space factors, Dalitz-plot limits, and geometry
 '''
 
 #pylint: disable=unused-import
