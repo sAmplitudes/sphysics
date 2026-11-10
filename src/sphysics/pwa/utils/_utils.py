@@ -25,7 +25,7 @@ def covIntensity(c: np.ndarray,covC: np.ndarray) -> tuple:
 
 	Returns:
 	    tuple: A tuple (intensity, covI), where intensity is an array with the shape of c and covI, the covariance
-	        matrix of the intensity, is an array of shape ``(len(c), len(c))``
+	    matrix of the intensity, is an array of shape ``(len(c), len(c))``
 	"""
 	c = np.array(c)
 	cReIm = np.empty(c.size*2, dtype=float)
@@ -56,7 +56,7 @@ def covPhase(c: np.ndarray,covC: np.ndarray) -> tuple:
 
 	Returns:
 	    tuple: A tuple (phase, covPhi), where phase is an array with the shape of c and covPhi, the covariance
-	        matrix of the phase, is an array of shape ``(len(c), len(c))``
+	    matrix of the phase, is an array of shape ``(len(c), len(c))``
 	"""
 	c = np.array(c)
 	cReIm = np.empty(c.size*2, dtype=float)
@@ -91,7 +91,7 @@ def covBranchingRatio(c: np.ndarray, i: np.ndarray, covC: np.ndarray) -> tuple:
 
 	Returns:
 		tuple: A tuple (branchingRatio, covBR), where branchingRatio is an array with the shape of c and covBR, the
-			covariance matrix of the branching ratios, is an array of shape ``(len(c), len(c))``
+		covariance matrix of the branching ratios, is an array of shape ``(len(c), len(c))``
 	"""
 	iHermitian = np.matrix(i).getH()  # pylint: disable=assignment-from-no-return
 	if np.any(i!= iHermitian):
@@ -325,7 +325,7 @@ class PWAConfig:
 
 		Returns:
 			pathlib.Path | None: The path of the given key, which is given relative to the parent directory of the configuration file,
-				or None if the key does not exist in the configuration paths.
+			or None if the key does not exist in the configuration paths.
 		"""
 		if key not in self._config['paths']:
 			return None

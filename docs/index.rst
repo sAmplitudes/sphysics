@@ -51,13 +51,12 @@ sphysics is distributed in the hope that it will be useful, but WITHOUT ANY WARR
 See the `LICENSE <https://github.com/sAmplitudes/sphysics/blob/main/LICENSE>`_ file for the full license text.
 
 Copyright (C) 2022-2026 the sphysics authors, see `AUTHORS.md <https://github.com/sAmplitudes/sphysics/blob/main/AUTHORS.md>`_.
-sphysics contains code from `ROOTPWA <https://github.com/ROOTPWA-Maintainers/ROOTPWA>`_, which is also licensed under the GNU General Public License version 3 or later; the files concerned carry ROOTPWA's license notice.
 
 
 Third-party software
 --------------------
 
-sphysics uses `Eigen <https://eigen.tuxfamily.org>`_ 3.4.0, which is downloaded when building sphysics.
+sphysics uses `Eigen <https://libeigen.gitlab.io>`_ 3.4.0, which is downloaded when building sphysics.
 Compiled sphysics packages contain code of Eigen, which is licensed under the Mozilla Public License 2.0, with some parts licensed under the BSD and Apache-2.0 licenses.
 The source code of Eigen 3.4.0 is available at https://gitlab.com/libeigen/eigen/-/tree/3.4.0.
 Compiled sphysics packages also contain code of `pybind11 <https://github.com/pybind/pybind11>`_, which is licensed under the BSD 3-Clause License.
