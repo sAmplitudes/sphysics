@@ -1,7 +1,7 @@
 # lorentz.py
 '''
 :Author: Fabian Krinner
-:Description: Created on 2020-03-11
+:Description: Lorentz products, tensor products, and boosts of Lorentz vectors
 '''
 
 from argparse import ArgumentError

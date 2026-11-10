@@ -119,8 +119,8 @@ class ConstantsClass(object):
 
 			:param M_rho: Mass of :math:`\\rho`.
 			:param G_rho: Width of :math:`\\rho`.
-			:param M_rho1450: Mass of :math:`\\rho`(1450).
-			:param G_rho1450: Width of :math:`\\rho`(1450).
+			:param M_rho1450: Mass of :math:`\\rho(1450)`.
+			:param G_rho1450: Width of :math:`\\rho(1450)`.
 			:param M_f2: Mass of :math:`f_2`.
 			:param G_f2: Width of :math:`f_2`.
 			:param M_sigma: Mass of :math:`\\sigma`.

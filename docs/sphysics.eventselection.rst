@@ -1,5 +1,5 @@
-Eventselection
-==============
+Event selection
+===============
 
 Histograms
 -----------------------------------
@@ -8,6 +8,7 @@ Histograms
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: Logger
 
 Utils
 ------------------------------------

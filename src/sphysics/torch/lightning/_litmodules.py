@@ -86,7 +86,7 @@ class LitModuleBase(L.LightningModule, ABC):
 	def configure_lr_scheduler(
 		self, _optimizer: torch.optim.Optimizer
 	) -> torch.optim.lr_scheduler.LRScheduler:
-		"""Construct the learning-rate schedulear. If returns None, no scheduler is used
+		"""Construct the learning-rate scheduler. If returns None, no scheduler is used
 
 		Args:
 				optimizer (torch.optim.Optimizer): Optimizer

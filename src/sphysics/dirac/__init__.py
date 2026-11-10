@@ -2,7 +2,7 @@
 '''
 :Author: Stefan Wallner
 
-:Description: Created on Tuesday 15 03 2022
+:Description: Dirac spinors in the Weyl representation
 '''
 
 #pylint: disable=unused-import

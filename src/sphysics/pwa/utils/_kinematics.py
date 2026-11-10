@@ -121,7 +121,7 @@ def calculateIsobarTreeHelicityAngles(
 										reference plane of the subsystem decays.
 
 	Returns:
-		dict[np.ndarray]: Helicilty angles, named as described above.
+		dict[np.ndarray]: Helicity angles, named as described above.
 	"""
 
 	helicityAngles = {}
@@ -221,7 +221,7 @@ def calculateIsobarGroupHelicityAngles(
 										reference plane of the subsystem decays.
 
 	Returns:
-		dict[np.ndarray]: Helicilty angles, named as described above.
+		dict[np.ndarray]: Helicity angles, named as described above.
 	"""
 	if len(momenta) > 10:
 		raise Exception("Cannot handle more than 10 momenta at the moment due to index matching")
@@ -331,7 +331,7 @@ def calculateHelicityAngles2x2Topology(
 										reference plane of the subsystem decays.
 
 	Returns:
-		dict[np.ndarray]: Helicilty angles, named as described above.
+		dict[np.ndarray]: Helicity angles, named as described above.
 	"""
 
 	helicityAngles2x2 = calculateIsobarGroupHelicityAngles((1,2),momenta,zRefPlaneOrig,momentaInCMS)

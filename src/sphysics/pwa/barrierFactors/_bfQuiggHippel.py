@@ -16,7 +16,7 @@ log = Logger('BW_Zemach')
 
 
 def barrierFactorPolynomSquared(L: int, breakupMom2: float, breakupMomScale : float = Constants.barrierFactorMomentumscale) -> float:
-	"""Polynom, i.e. denominator of squared centrifugal barrier factors for the decay (12) -> (1) (2) with rel. angular momentum L
+	"""Polynomial, i.e. denominator of squared centrifugal barrier factors for the decay (12) -> (1) (2) with rel. angular momentum L
 
 	This is the polynomial appearing in the denominator of the squared centrifugal barrier factor
 

@@ -1,6 +1,6 @@
 # coding: utf-8
 '''
-:Description: Created on Tuesday 31 05 2022
+:Description: Training of PyTorch models, metrics, hadron identification, and Lightning modules
 '''
 
 #pylint: disable=unused-import

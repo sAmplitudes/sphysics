@@ -2,7 +2,7 @@
 '''
 :Author: Stefan Wallner
 
-:Description: Histogramming classes and functions, Created on Tuesday 25 04 2023
+:Description: Histogramming classes and functions
 '''
 
 from __future__ import absolute_import, print_function, division, annotations
@@ -29,7 +29,7 @@ class SparseHist:
 	def fill(self, values: np.ndarray, weights: np.ndarray = None) -> None:
 		"""Fills the values into the histogram and weights the data if weights are provided.
 
-		:param values: Array of values to be filled into the sparese histogram
+		:param values: Array of values to be filled into the sparse histogram
 		:param weights: Weights used to fill the histogram. Defaults to None, i.e. weight 1 per entry.
 		"""
 		if weights is not None and weights.size != values.size:

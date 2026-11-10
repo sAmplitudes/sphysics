@@ -24,7 +24,7 @@ def compensationFactorSquared_BlattWeisskopf(L: int, s: float|np.ndarray, m1: fl
 	Parameterization according to Blatt and Weisskopf 1952.
 	Taken from The physics of B Factories; Eur.Phys.J.C (2014) 74:3026, equation 13.2.8.
 
-	These compensation factor models ONLY the high energy suppression due to the angular momentum L,
+	This compensation factor models ONLY the high energy suppression due to the angular momentum L,
 	not the :math:`q^{2L}` part that typically comes with the Zemach formalism.
 
 
@@ -32,7 +32,7 @@ def compensationFactorSquared_BlattWeisskopf(L: int, s: float|np.ndarray, m1: fl
 
 	Args:
 		L (int): Relative orbital angular momentum
-		s (float | np.ndarray): Invariant mass squred of the two-body system
+		s (float | np.ndarray): Invariant mass squared of the two-body system
 		m1 (float | np.ndarray): Mass of particle 1
 		m2 (float | np.ndarray): Mass of particle 2
 		mRes (float | np.ndarray): Nominal mass of the resonance in the two-body system
@@ -58,7 +58,7 @@ def compensationFactor_BlattWeisskopf(L: int, s: float|np.ndarray, m1: float|np.
 	Parameterization according to Blatt and Weisskopf 1952.
 	Taken from The physics of B Factories; Eur.Phys.J.C (2014) 74:3026, equation 13.2.8.
 
-	These compensation factor models ONLY the high energy suppression due to the angular momentum L,
+	This compensation factor models ONLY the high energy suppression due to the angular momentum L,
 	not the :math:`q^{2L}` part that typically comes with the Zemach formalism.
 
 
@@ -66,7 +66,7 @@ def compensationFactor_BlattWeisskopf(L: int, s: float|np.ndarray, m1: float|np.
 
 	Args:
 		L (int): Relative orbital angular momentum
-		s (float | np.ndarray): Invariant mass squred of the two-body system
+		s (float | np.ndarray): Invariant mass squared of the two-body system
 		m1 (float | np.ndarray): Mass of particle 1
 		m2 (float | np.ndarray): Mass of particle 2
 		mRes (float | np.ndarray): Nominal mass of the resonance in the two-body system
@@ -80,16 +80,17 @@ def compensationFactorSquared_DalitzBlattWeisskopf(L: int, s: float|np.ndarray, 
                                                    mRes: float|np.ndarray, qRadial: float = Constants.barrierFactorMomentumscale):
 	"""Squared centrifugal compensation factor for the decay (123) -> (12) (3) with rel. angular momentum L for the Zemach formalism.
 
-	:IMPORTANT:
-	Here, the momentum :math:`p_3` of the isobar particle (3) in the (12) rest frame is used instead of the two-body break-up momentum,
-	i.e. the momentum :math:`p_3^*` of (3) in the (123) rest frame.
-	This compensates the momentum dependence introduced by the Zemach formalism, which is :math:`p_3^{*2L}` not :math:`q^{2L}`.
-	This compensation factor should only be used for the (123) -> (12) (3) decay, NOT for the (12) -> (1) (2) decay!
+	.. important::
+
+		Here, the momentum :math:`p_3` of the isobar particle (3) in the (12) rest frame is used instead of the two-body break-up momentum,
+		i.e. the momentum :math:`p_3^*` of (3) in the (123) rest frame.
+		This compensates the momentum dependence introduced by the Zemach formalism, which is :math:`p_3^{*2L}` not :math:`q^{2L}`.
+		This compensation factor should only be used for the (123) -> (12) (3) decay, NOT for the (12) -> (1) (2) decay!
 
 	Parameterization according to Blatt and Weisskopf 1952.
 	Taken from The physics of B Factories; Eur.Phys.J.C (2014) 74:3026, equation 13.2.8.
 
-	These compensation factor models ONLY the high energy suppression due to the angular momentum L,
+	This compensation factor models ONLY the high energy suppression due to the angular momentum L,
 	not the :math:`p_3^{2L}` part that typically comes with the Zemach formalism.
 
 
@@ -120,16 +121,17 @@ def compensationFactor_DalitzBlattWeisskopf(L: int, s: float|np.ndarray, m123: f
                                                mRes: float|np.ndarray, qRadial: float = Constants.barrierFactorMomentumscale):
 	"""Centrifugal compensation factor for the decay (123) -> (12) (3) with rel. angular momentum L for the Zemach formalism.
 
-	:IMPORTANT:
-	Here, the momentum :math:`p_3` of the isobar particle (3) in the (12) rest frame is used instead of the two-body break-up momentum,
-	i.e. the momentum :math:`p_3^*` of (3) in the (123) rest frame.
-	This compensates the momentum dependence introduced by the Zemach formalism, which is :math:`p_3^{*2L}` not :math:`q^{2L}`.
-	This compensation factor should only be used for the (123) -> (12) (3) decay, NOT for the (12) -> (1) (2) decay!
+	.. important::
+
+		Here, the momentum :math:`p_3` of the isobar particle (3) in the (12) rest frame is used instead of the two-body break-up momentum,
+		i.e. the momentum :math:`p_3^*` of (3) in the (123) rest frame.
+		This compensates the momentum dependence introduced by the Zemach formalism, which is :math:`p_3^{*2L}` not :math:`q^{2L}`.
+		This compensation factor should only be used for the (123) -> (12) (3) decay, NOT for the (12) -> (1) (2) decay!
 
 	Parameterization according to Blatt and Weisskopf 1952.
 	Taken from The physics of B Factories; Eur.Phys.J.C (2014) 74:3026, equation 13.2.8.
 
-	These compensation factor models ONLY the high energy suppression due to the angular momentum L,
+	This compensation factor models ONLY the high energy suppression due to the angular momentum L,
 	not the :math:`p_3^{2L}` part that typically comes with the Zemach formalism.
 
 

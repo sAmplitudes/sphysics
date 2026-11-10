@@ -8,6 +8,7 @@ Geometry
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: Logger
 
 Module contents
 ---------------

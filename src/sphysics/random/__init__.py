@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Thursday 17 03 2022
+:Description: Random number generators and seeding
 '''
 
 #pylint: disable=unused-import

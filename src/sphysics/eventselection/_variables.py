@@ -475,7 +475,7 @@ class VariablesBase:
 		The default generator from `sphysics.random.generators` is used.
 
 		Args:
-			subsetFractions (Sequence[float]): Fraction for all subset, except for the last one. The last subset contains the rest of the evetns
+			subsetFractions (Sequence[float]): Fraction for all subset, except for the last one. The last subset contains the rest of the events
 			shuffle (Sequence[float], optional): Shuffle events. If false the order of events in each random subset is preserved.
 
 		Returns:
@@ -511,7 +511,7 @@ class VariablesBase:
 		The default generator from `sphysics.random.generators` is used.
 
 		Args:
-			subsetFractions (Sequence[float]): Fraction for all subset, except for the last one. The last subset contains the rest of the evetns
+			subsetFractions (Sequence[float]): Fraction for all subset, except for the last one. The last subset contains the rest of the events
 			shuffle (Sequence[float], optional): Shuffle events. If false the order of events in each random subset is preserved.
 
 		Returns:
@@ -757,8 +757,8 @@ class Variables(VariablesBase):
 		:param auto: Whether it is automatically loaded from the tree, defaults to True
 		:param is4Momentum: Whether it is a four-momentum variable, defaults to False
 		:param momentumVariables: Names of the 4 variables of the four-momentum, Defaults to :math:`[E, p_x, p_y, p_z]`
-		:param castDtype: Cast array to a given type when loading form a root file, defaults to False.
-		Special types \\: boolNanfalse \\:Same as bool, but casts `nan` to False instead of True
+		:param castDtype: Cast array to a given type when loading from a ROOT file, defaults to False.
+			Special type ``boolNanfalse``: same as ``bool``, but casts ``nan`` to False instead of True.
 		:return: True, if the variable is added correctly, else False
 		'''
 		if super().addVariable(name):

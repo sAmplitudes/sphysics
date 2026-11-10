@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Wednesday 01 06 2022
+:Description: Metrics for the training of PyTorch models: accuracy, loss, AUROC, efficiency, and misidentification
 '''
 
 #pylint: disable=unused-import

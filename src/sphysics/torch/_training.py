@@ -218,7 +218,7 @@ class Trainer:
 		:type batchSize: int
 		:param projectDir: Directory for saving the checkpoints
 		:type projectDir: str
-		:param approxTrainMetrics: If True, only training loss is computed during training, otherwise full metrixs are computed, defaults to True
+		:param approxTrainMetrics: If True, only training loss is computed during training, otherwise full metrics are computed, defaults to True
 		:type approxTrainMetrics: bool, optional
 		:param metricClasses: List of metric classes, defaults to None
 		:type metricClasses: list, optional

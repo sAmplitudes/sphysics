@@ -42,7 +42,7 @@ def createFitresult(couplings: np.ndarray, covarianceMatrix: np.ndarray, auxilia
 
 def fitresult_getResultObj(self):
 	return pickle.loads(self.getResultObjDump())
-FitResult.resultObj = property(fitresult_getResultObj, None, None, "Get result object of mimimizer.")
+FitResult.resultObj = property(fitresult_getResultObj, None, None, "Get result object of minimizer.")
 
 
 

@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Tuesday 15 03 2022
+:Description: Models, kinematics, hadronic tensors, and amplitudes for three-body decays
 '''
 
 #pylint: disable=unused-import

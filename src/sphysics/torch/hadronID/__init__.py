@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
-Created on Thursday 01 12 2022
-Author: Stefan Wallner
+:Author: Stefan Wallner
+:Description: Neural networks for hadron identification, their training datasets, and performance plots
 '''
 
 #pylint: disable=unused-import

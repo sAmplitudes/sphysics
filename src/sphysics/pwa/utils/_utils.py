@@ -18,18 +18,14 @@ def covIntensity(c: np.ndarray,covC: np.ndarray) -> tuple:
 	""" Calculate the covariance matrix for the intensity.
 
 	Args:
-	    c(np.array): complex coupling constants
-	    covC(np.array): covariance matrix for the coupling constants
-	    The shape of covariance matrix should be `2*length(c) x 2*length(c)`
-	    The format of covariance matrix should be (Cov[Re(c1),Re(c1)], Cov[Re(c1),Im(c1)], Cov[Re(c1),Re(c2)], ...
-		                                     Cov[Im(c1),Re(c1)], Cov[Im(c1),Im(c1)], ...
-											 .
-											 .
-											 .
-											                                                                  )
+	    c (np.ndarray): complex coupling constants
+	    covC (np.ndarray): covariance matrix of the coupling constants with shape ``(2 * len(c), 2 * len(c))``,
+	        where real and imaginary parts alternate, i.e., the rows and columns are ordered as
+	        Re(c1), Im(c1), Re(c2), Im(c2), ...
 
 	Returns:
-	    tuple: A tuble (intensity, covI), where the intensity is an array of shape[c] and the covariance matrix of the intensity (covI) is an array of shape `length(c) x length(c)`)
+	    tuple: A tuple (intensity, covI), where intensity is an array with the shape of c and covI, the covariance
+	        matrix of the intensity, is an array of shape ``(len(c), len(c))``
 	"""
 	c = np.array(c)
 	cReIm = np.empty(c.size*2, dtype=float)
@@ -53,18 +49,14 @@ def covPhase(c: np.ndarray,covC: np.ndarray) -> tuple:
 	""" Calculate the covariance matrix for the phase.
 
 	Args:
-	    c(np.array): complex coupling constants
-	    covC(np.array): covariance matrix for the coupling constants
-	    The shape of covariance matrix should be `2*length(c) x 2*length(c)`
-	    The format of covariance matrix should be (Cov[Re(c1),Re(c1)], Cov[Re(c1),Im(c1)], Cov[Re(c1),Re(c2)], ...
-		                                     Cov[Im(c1),Re(c1)], Cov[Im(c1),Im(c1)], ...
-											 .
-											 .
-											 .
-											                                                                  )
+	    c (np.ndarray): complex coupling constants
+	    covC (np.ndarray): covariance matrix of the coupling constants with shape ``(2 * len(c), 2 * len(c))``,
+	        where real and imaginary parts alternate, i.e., the rows and columns are ordered as
+	        Re(c1), Im(c1), Re(c2), Im(c2), ...
 
 	Returns:
-	    tuple: A tuble (phase, covPhi), where the phase is an array of shape [c] and the covariance matrix of the phase(covPhi) is an array of the shape `length(c) x length(c)`)
+	    tuple: A tuple (phase, covPhi), where phase is an array with the shape of c and covPhi, the covariance
+	        matrix of the phase, is an array of shape ``(len(c), len(c))``
 	"""
 	c = np.array(c)
 	cReIm = np.empty(c.size*2, dtype=float)
@@ -91,15 +83,15 @@ def covBranchingRatio(c: np.ndarray, i: np.ndarray, covC: np.ndarray) -> tuple:
 	""" Calculate the branching ratio and its covariance matrix.
 
 	Args:
-		c(np.array): complex coupling constants
-		i(np.array): hermitian integral matrix, the shape of the integral matrix should be `length(c) x length(c)`
-		covC(np.array): covariance matrix for the coupling constants, the shape of covariance matrix should be `2*length(c) x 2*length(c)`
-		The format of covariance matrix should be (Cov[Re(c1),Re(c1)], Cov[Re(c1),Im(c1)], Cov[Re(c1),Re(c2)], ...
-													Cov[Im(c1),Re(c1)], Cov[Im(c1),Im(c1)], ...
-																													)
+		c (np.ndarray): complex coupling constants
+		i (np.ndarray): hermitian integral matrix of shape ``(len(c), len(c))``
+		covC (np.ndarray): covariance matrix of the coupling constants with shape ``(2 * len(c), 2 * len(c))``,
+			where real and imaginary parts alternate, i.e., the rows and columns are ordered as
+			Re(c1), Im(c1), Re(c2), Im(c2), ...
+
 	Returns:
-		tuple: A tuble (branchingRatio, covBR) where branchingRatio is an array of shape [c] and the covariance matrix of branching ratio(covBr)
-		is an array of shape `length(c) x length(c)`
+		tuple: A tuple (branchingRatio, covBR), where branchingRatio is an array with the shape of c and covBR, the
+			covariance matrix of the branching ratios, is an array of shape ``(len(c), len(c))``
 	"""
 	iHermitian = np.matrix(i).getH()  # pylint: disable=assignment-from-no-return
 	if np.any(i!= iHermitian):
@@ -332,9 +324,8 @@ class PWAConfig:
 			resolve (bool): Whether to resolve the path to an absolute path. Defaults to True.
 
 		Returns:
-			pathlib.Path: The resolved absolute path corresponding to the given
-				key, relative to the configuration file's parent directory.
-			None: If the key does not exist in the configuration paths.
+			pathlib.Path | None: The path of the given key, which is given relative to the parent directory of the configuration file,
+				or None if the key does not exist in the configuration paths.
 		"""
 		if key not in self._config['paths']:
 			return None
@@ -617,7 +608,7 @@ class PWAConfig:
 
 
 	def getFitResultsPath(self, binNumber: int = None, fitThreadNum: int = None) -> str:
-		"""Get Path to the merged fit results, the binned fit results and the binned fit results in their separet threads.
+		"""Get Path to the merged fit results, the binned fit results and the binned fit results in their separate threads.
 
 		Args:
 			binNumber (int, optional): The bin number of the wanted fit result. Defaults to None.

@@ -4,7 +4,7 @@ Lightning
 Submodules
 ----------
 
-Lr\_schedulder
+Learning-rate schedulers
 ----------------------------------------------
 
 .. automodule:: sphysics.torch.lightning.lr_schedulder

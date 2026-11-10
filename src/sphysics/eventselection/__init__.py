@@ -2,7 +2,7 @@
 '''
 :Author: Stefan Wallner
 
-:Description: Created on Thursday 10 03 2022
+:Description: Variables loaded from ROOT trees, histograms, efficiency tables, threshold scans, and plots for the event selection
 '''
 
 #pylint: disable=unused-import

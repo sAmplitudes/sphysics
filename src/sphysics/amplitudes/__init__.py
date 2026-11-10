@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Tue 15 Oct 2019 11:50:39 AM CEST
+:Description: Dynamic amplitudes of resonances, S-wave parameterizations, and the K-matrix formalism
 '''
 
 #pylint: disable=unused-import

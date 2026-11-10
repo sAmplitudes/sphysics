@@ -1,4 +1,4 @@
-Twobody
+Two-body decays
 ===============
 
 .. toctree::

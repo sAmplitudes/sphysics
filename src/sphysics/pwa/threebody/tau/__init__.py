@@ -1,7 +1,7 @@
 # coding: utf-8
 '''
 :Author: Stefan Wallner
-:Description: Created on Tuesday 15 03 2022
+:Description: Models, kinematics, and event handling for tau decays into three charged pions
 '''
 
 #pylint: disable=unused-import

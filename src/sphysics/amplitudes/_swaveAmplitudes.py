@@ -118,7 +118,7 @@ def kpisPelaezRodas(mass: float|np.ndarray|tf.Tensor, threshold: float = 1.8, us
 
 	Parameterization taken from Phys.Rept. 969 (2022) 1 (DOI: 10.1016/j.physrep.2022.03.004).
 	We use the parameters from the constraint fit to data (CFD).
-	Amplitudes are taken from a look-up table created from a Mathematica notebook privately sent by Arkeitz Rodas.
+	Amplitudes are taken from a look-up table created from a Mathematica notebook privately sent by Arkaitz Rodas.
 	The lookup table contains values for :math:`K\\pi` masses from threshold up to 6 GeV/c².
 	Below the :math:`K\\pi` threshold, the amplitude is set to zero.
 	When adding a Breit-Wigner component for a high-mass peak, set `useAddBW` to `True`. If another threshold is
