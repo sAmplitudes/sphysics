@@ -32,7 +32,8 @@ from .utils import Logger
 from ._core.utilities import Environment  # pylint: disable=wrong-import-position,import-error
 
 _log = Logger("sphysics")
-if Environment().isGitStatusClean():
+# the Git hash and status are undefined if sphysics was not built from a Git repository, e.g. from a source distribution
+if Environment().isGitStatusClean() or Environment().getGitHash() == "undefined":
 	_log.info(Environment().getSummary())
 else:
 	_log.warning(Environment().getSummary())

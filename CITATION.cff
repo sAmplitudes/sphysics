@@ -33,7 +33,7 @@ authors:
     given-names: Miriam
 doi: 10.5281/zenodo.23214121
 repository-code: https://github.com/sAmplitudes/sphysics
-url: https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics
+url: https://sphysics.readthedocs.io
 license: GPL-3.0-or-later
 keywords:
   - amplitude analyses

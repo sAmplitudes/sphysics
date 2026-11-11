@@ -6,22 +6,27 @@ sphysics provides tools designed for amplitude analysis, event selection, kinema
 
 The documentation for sphysics can be accessed on [Read the Docs](https://sphysics.readthedocs.io) and, with a DESY account, on [GitLab Pages](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics)
 
-Information on how to install and use sphysics can be found in the [Getting Started page](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics/gettingstarted.html)
+Information on how to install and use sphysics can be found in the [Getting Started page](https://sphysics.readthedocs.io/en/stable/gettingstarted.html)
 
-If you want to contribute to sphysics, please see the [Contributing page](https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics/contributing.html)
+## Development
+
+The main development of sphysics, including issues and merge requests, takes place in the [Belle II GitLab repository](https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics), which requires a DESY account.
+The [GitHub repository](https://github.com/sAmplitudes/sphysics) is a public mirror of the released versions.
+
+If you want to contribute to sphysics, please see the [Contributing page](https://sphysics.readthedocs.io/en/stable/contributing.html)
 
 ## Citing sphysics
 
 If you use sphysics, please cite it using its DOI [10.5281/zenodo.23214121](https://doi.org/10.5281/zenodo.23214121), which refers to all versions; the DOIs of the individual versions are listed on Zenodo.
-The citation metadata are also available in [CITATION.cff](CITATION.cff).
+The citation metadata are also available in [CITATION.cff](https://github.com/sAmplitudes/sphysics/blob/main/CITATION.cff).
 
 ## License
 
 sphysics is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 sphysics is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the [LICENSE](LICENSE) file for the full license text.
+See the [LICENSE](https://github.com/sAmplitudes/sphysics/blob/main/LICENSE) file for the full license text.
 
-Copyright (C) 2022-2026 the sphysics authors, see [AUTHORS.md](AUTHORS.md).
+Copyright (C) 2022-2026 the sphysics authors, see [AUTHORS.md](https://github.com/sAmplitudes/sphysics/blob/main/AUTHORS.md).
 sphysics contains code from [ROOTPWA](https://github.com/ROOTPWA-Maintainers/ROOTPWA), which is also licensed under the GNU General Public License version 3 or later; the files concerned carry ROOTPWA's license notice.
 
 ## Third-party software
