@@ -56,7 +56,7 @@ Comments
 
 - sphysics is distributed as a source package, i.e. its C++ code is compiled during the installation.
   This requires a Linux system with a C++ compiler supporting C++17.
-  Unless the pip build isolation is disabled (see below), pip downloads the build dependencies listed in ``pyproject.toml``, including TensorFlow, during the installation.
+  Unless the pip build isolation is disabled (see below), pip downloads the build dependencies listed in ``pyproject.toml`` during the installation.
 
 - Building sphysics downloads Eigen 3.4.0 (https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz), which requires network access.
   To build sphysics without network access, download and extract the archive beforehand and pass its path to the build:
@@ -70,7 +70,7 @@ Comments
 
   .. code-block:: bash
 
-     pip install pybind11 scikit-build-core 'cmake>=3.18' pyproject_metadata setuptools_scm 'tensorflow<2.22' pathspec
+     pip install pybind11 scikit-build-core 'cmake>=3.18' pyproject_metadata setuptools_scm pathspec
 
   Then, install sphysics via:
 

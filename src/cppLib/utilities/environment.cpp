@@ -55,9 +55,21 @@ sphysics::Environment::getSummary() const
 	out << "Compilation environment:" << std::endl;
 	out << '\t' << "sphysics software version:" << std::endl;
 	out << '\t' << '\t' << "Version:   " << getVersion() << "" << std::endl;
-	out << '\t' << '\t' << "Git hash: '" << getGitHash() << "'" << std::endl;
-	out << '\t' << '\t' << (isGitStatusClean()? "Workspace clean": "Uncommited changes!")<< std::endl;
-	out << '\t' << "Library versions:" << std::endl;
-	for(const auto& lib: _libraryVersions) out << "\t\t" << std::left << std::setw(15) << lib.first << ": " << lib.second << std::endl;
+	// the Git hash and status are undefined if sphysics was not built from a Git repository, e.g. from a source distribution
+	if (getGitHash() != "undefined") {
+		out << '\t' << '\t' << "Git hash: '" << getGitHash() << "'" << std::endl;
+		out << '\t' << '\t' << (isGitStatusClean()? "Workspace clean": "Uncommited changes!")<< std::endl;
+	}
+	// The Tensorflow version is not printed, as the library is not compiled against Tensorflow
+	// and its version is in general not known at compile time. It is kept in _libraryVersions.
+	bool printedHeader = false;
+	for(const auto& lib: _libraryVersions) {
+		if (lib.first == "Tensorflow") continue;
+		if (not printedHeader) {
+			out << '\t' << "Library versions:" << std::endl;
+			printedHeader = true;
+		}
+		out << "\t\t" << std::left << std::setw(15) << lib.first << ": " << lib.second << std::endl;
+	}
 	return out.str();
 }

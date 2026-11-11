@@ -181,8 +181,16 @@ endif()
 
 # set common compiler flags consider flags -pedantic -Wsuggest-attribute=pure
 # -Wsuggest-attribute=noreturn -Wsuggest-attribute=const
-set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -Wall -Wextra -Woverloaded-virtual -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Woverloaded-virtual")
+# Treating warnings as errors is off by default, such that a warning of a
+# compiler that was not tested does not break the installation. It is enabled in
+# the CI pipeline. With pip, enable it via
+# `--config-settings=cmake.define.WERROR=ON` or by setting the environment
+# variable `SKBUILD_CMAKE_DEFINE=WERROR=ON`.
+option(WERROR "Treat compiler warnings as errors" OFF)
+if(WERROR)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+endif()
 # options switchable via command line enable option by running cmake .. -D
 # <VAR>=<any value>
 if(ARCH_NATIVE)
@@ -321,16 +329,18 @@ find_package(pybind11 CONFIG REQUIRED)
 message(STATUS "Using pybind11 version '${pybind11_VERSION}'.")
 message(STATUS "Using pybind11 include directory '${pybind11_INCLUDE_DIRS}'.")
 
-# setup tensorflow
+# setup tensorflow (optional); the C++ code is not compiled or linked against
+# Tensorflow, hence it is not a build requirement
 message(STATUS "")
 message(STATUS ">>> Setting up tensorflow.")
-find_package(Tensorflow 2.0 REQUIRED)
+find_package(Tensorflow 2.0)
 set_package_properties(
   Tensorflow PROPERTIES
   DESCRIPTION "Machine learning platform"
   URL "https://www.tensorflow.org/"
-  PURPOSE "Used for generating the compute graph."
-  TYPE REQUIRED)
+  PURPOSE
+    "Only used to store the Tensorflow version of the build environment in the library."
+  TYPE OPTIONAL)
 
 # setup pylint (optional)
 message(STATUS "")

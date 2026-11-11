@@ -3,6 +3,7 @@ stages:
   - installable
   - check
   - build
+  - release-test
   - deploy
 
 
@@ -11,10 +12,14 @@ variables:
   CI_IMAGE: "$CI_REGISTRY_IMAGE/ci"
   PYTHONFAULTHANDLER: "1"
   TF_ENABLE_ONEDNN_OPTS: "0"
+  # compiler warnings are errors in the CI builds (off by default, see CMakeLists.txt);
+  # scikit-build-core passes this on to CMake as -DWERROR=ON
+  SKBUILD_CMAKE_DEFINE: "WERROR=ON"
 
-# The build requirements (incl. tensorflow) are part of the CI image. Hence, all
-# builds use --no-build-isolation; otherwise pip downloads them again into a
-# temporary build environment for every build.
+# The build requirements are part of the CI image. Hence, all builds use
+# --no-build-isolation; otherwise pip downloads them again into a temporary
+# build environment for every build. The exception is the install-from-sdist
+# job, which installs sphysics the way a user does.
 
 default:
   image: "$CI_IMAGE:latest"
@@ -165,6 +170,66 @@ build_package:
       - dist/
     expire_in: 7 days
 
+
+
+# The release-test stage runs for release tags only. It uploads the sdist to
+# TestPyPI and then installs it from there the way a user does. The deploy stage
+# (GitLab package registry, PyPI, documentation) starts only if this succeeds.
+
+# TESTPYPI_TOKEN is an API token of test.pypi.org stored as masked CI/CD
+# variable of the project (if it is protected, the version tags must be
+# protected tags too, otherwise the variable is not available in tag pipelines)
+publish_testpypi:
+  stage: release-test
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/
+  dependencies:
+    - build_package
+  variables:
+    TWINE_REPOSITORY_URL: "https://test.pypi.org/legacy/"
+    TWINE_USERNAME: "__token__"
+    TWINE_PASSWORD: "${TESTPYPI_TOKEN}"
+  script:
+    # --skip-existing, such that the job can be retried; a version can be uploaded only once
+    - python -m twine upload --verbose --skip-existing dist/*
+
+# Installs the sdist uploaded to TestPyPI the way a user does with `pip install
+# sphysics`: in a plain Python image with only a compiler, with pip build
+# isolation (i.e. the build requirements come from pyproject.toml and not from
+# the CI image), and with the default compiler flags (no -Werror).
+install-from-testpypi:
+  stage: release-test
+  image: python:3.11-slim-trixie
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/
+  needs:
+    - job: publish_testpypi
+      artifacts: false
+  variables:
+    # the repository is not needed
+    GIT_STRATEGY: none
+    SKBUILD_CMAKE_DEFINE: "WERROR=OFF"
+    PIP_NO_CACHE_DIR: "1"
+    PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    PIP_ROOT_USER_ACTION: "ignore"
+  script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends g++ make
+    - cd /tmp
+    # Only the sdist of sphysics is taken from TestPyPI, by its URL; the build
+    # requirements and dependencies are taken from PyPI. TestPyPI is not used
+    # as package index, because anyone can upload packages with the names of
+    # the dependencies there. The upload may take a moment to become available.
+    - |
+      for i in $(seq 1 30); do
+        SDIST_URL=$(python -c "import json, urllib.request; r = json.load(urllib.request.urlopen('https://test.pypi.org/pypi/sphysics/${CI_COMMIT_TAG}/json')); print(next(u['url'] for u in r['urls'] if u['packagetype'] == 'sdist'))") && break
+        echo "sphysics ${CI_COMMIT_TAG} is not yet available on TestPyPI, trying again in 10 s"
+        sleep 10
+      done
+    - test -n "$SDIST_URL"
+    - python -m pip install "$SDIST_URL"
+    - python -c "import sphysics; print(sphysics.__file__)"
+
 publish_package:
   stage: deploy
   rules:
@@ -175,5 +240,19 @@ publish_package:
     TWINE_REPOSITORY_URL: "https://gitlab.desy.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi"
     TWINE_USERNAME: "gitlab-ci-token"
     TWINE_PASSWORD: "${CI_JOB_TOKEN}"
+  script:
+    - python -m twine upload --verbose dist/*
+
+# PYPI_TOKEN is an API token of pypi.org stored as masked CI/CD variable of the
+# project (see the comment on TESTPYPI_TOKEN)
+publish_pypi:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/
+  dependencies:
+    - build_package
+  variables:
+    TWINE_USERNAME: "__token__"
+    TWINE_PASSWORD: "${PYPI_TOKEN}"
   script:
     - python -m twine upload --verbose dist/*

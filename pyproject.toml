@@ -1,5 +1,5 @@
 [build-system]
-requires = ["pybind11", "scikit-build-core","cmake>=3.18","tensorflow<2.22"]
+requires = ["pybind11", "scikit-build-core", "cmake>=3.18", "setuptools_scm"]
 build-backend = "scikit_build_core.build"
 
 
