@@ -62,7 +62,7 @@ in the base folder of this repository.
 Without a version, the patch number of the latest version is increased by one.
 The local ``main`` branch must be identical to the ``main`` branch on GitLab.
 After checking that ``main`` contains only the public history, the script shows a summary and asks for confirmation.
-It then tags ``main`` with the version, pushes the tag to GitLab, where the CI deploys the documentation to GitLab Pages and Read the Docs and publishes the package, and pushes ``main`` and only this tag to the public GitHub repository (https://github.com/sAmplitudes/sphysics).
+It then tags ``main`` with the version, pushes the tag to GitLab, where the CI uploads the package to TestPyPI and installs it from there as a test, deploys the documentation to GitLab Pages and Read the Docs, and publishes the package in the GitLab package registry and on PyPI, and pushes ``main`` and only this tag to the public GitHub repository (https://github.com/sAmplitudes/sphysics).
 Other branches and tags are never pushed to GitHub.
 With ``--dry-run``, the script only runs the checks and shows what it would do.
 

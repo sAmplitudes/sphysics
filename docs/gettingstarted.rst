@@ -51,6 +51,19 @@ Without access to the GitLab repository, sphysics can be installed from its publ
    pip install git+https://github.com/sAmplitudes/sphysics.git
 
 
+Alternative Installation from PyPI
+--------------------------------------------------------------
+
+The released versions of sphysics are also available on PyPI (https://pypi.org/project/sphysics) and can be installed using:
+
+.. code-block:: bash
+
+   pip install sphysics
+
+The installation from the GitLab or GitHub repository, as described above, remains the recommended way.
+The package on PyPI is a source package as well, i.e. the comments below also apply to it.
+
+
 Comments
 --------------
 

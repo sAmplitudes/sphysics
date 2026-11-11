@@ -67,12 +67,15 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics"
-Documentation = "https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics"
-"Bug Tracker" = "https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics/issues"
-"Public Issues" = "https://github.com/sAmplitudes/sphysics/issues"
-Changelog = "https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics/releases"
+# The public links come first. The main development, including the issues, takes
+# place in the GitLab repository, which requires a DESY account. PyPI limits the labels to 32 characters.
+Homepage = "https://github.com/sAmplitudes/sphysics"
+Documentation = "https://sphysics.readthedocs.io"
+Changelog = "https://github.com/sAmplitudes/sphysics/releases"
 DOI = "https://doi.org/10.5281/zenodo.23214121"
+"GitLab (main development)" = "https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics"
+Issues = "https://gitlab.desy.de/belle2/physics/amplitudesatbelleii/sphysics/issues"
+"GitLab Pages documentation" = "https://belle2.pages.desy.de/physics/amplitudesatbelleii/sphysics"
 
 
 [tool.scikit-build]
