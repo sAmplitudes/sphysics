@@ -1,8 +1,8 @@
 # Authors
 
 sphysics is developed by Stefan Wallner (main author), with contributions by
-Martin Bartl, Julien Beckers, Yannik Fausch, Godo Kurten, Fabian Krinner,
-Claudia Perez-Orive, Markus Reif, Xavier Simo, Oskar Tittel, and Miriam
+Martin Bartl, Julien Beckers, Yannik Fausch, Leon Heuser, Godo Kurten, Fabian
+Krinner, Claudia Perez-Orive, Markus Reif, Xavier Simo, Oskar Tittel, and Miriam
 Weiskopf.
 
 ## Code from other authors and projects

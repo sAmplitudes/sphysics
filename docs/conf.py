@@ -28,10 +28,15 @@ master_doc = "index"
 # -- General configuration --------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.viewcode', 'sphinx_rtd_theme', 'sphinx.ext.autodoc', 'sphinx.ext.mathjax', 'sphinx.ext.napoleon',]
+extensions = ['sphinx.ext.viewcode', 'sphinx_rtd_theme', 'sphinx.ext.autodoc', 'sphinx.ext.mathjax', 'sphinx.ext.napoleon', 'myst_nb',]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/.ipynb_checkpoints']
+
+# Notebooks (myst-nb)
+nb_execution_mode = "off"  # render the outputs stored in the notebooks, do not execute them
+myst_enable_extensions = ["dollarmath"]  # $...$ and $$...$$ math in Markdown cells
+myst_dmath_double_inline = True  # allow $$...$$ display math inside a paragraph, as in Jupyter
 
 autosummary_generate = True
 autodoc_member_order = 'bysource'  # Keep function/class order as in source code
@@ -46,6 +51,7 @@ autodoc_default_options = {
 
 autodoc_mock_imports = [
     "lightning",
+    "modernplotting",  # not on PyPI, hence not installable on Read the Docs
     "numba",
     "tensorflow",
     "tensorflow_probability",

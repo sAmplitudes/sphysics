@@ -19,3 +19,4 @@ from ._swaveAmplitudeAuMorganPennington import piPiSwaveAuMorganPennington, piPi
 from ._swaveAmplitudeFlatte import flatte, flatteS, flatteNorm, flatteNormS
 from ._a1_1420_triangle1pAmplitude import a1_1420_triangleAmplitude, a1_1420_triangleMulA1Amplitude
 from ._kMatrixFormalism import KMatrixFormalismParams, KMatrixFormalism
+from ._omnesFunctions import piPiSwaveI2_phaseShiftS, piPiSwaveI2_omnesS
