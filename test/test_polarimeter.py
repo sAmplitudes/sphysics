@@ -23,8 +23,8 @@ import numpy as np
 
 # Spin-density parameters of the toy samples in the (n, r, k) component order of the nrk frame.
 # They are chosen such that 0 < 1 + B+.h+ + B-.h- + h+.C.h- < 2 for all unit vectors h+, h-.
-B_POS = np.array([0.1, -0.1, 0.05])
-B_NEG = np.array([0.0, 0.1, -0.05])
+B_POS = -np.array([0.1, -0.1, 0.05])
+B_NEG = -np.array([0.0, 0.1, -0.05])
 C_IJ = np.array([[-0.5, 0.1,  0.0],
                  [0.05, 0.4, -0.1],
                  [0.0, 0.05,  0.3]])
@@ -232,7 +232,6 @@ class PolarimeterTest(unittest.TestCase):
 		# with the tau- current formula for tau+ (no CP transformation), the 1- interference breaks the mirror relation
 		hPlusMirrorWrong = taupair.get_polarimeter_from_J(current(reflect=True, isParticle=True), ~isParticle, REFLECT*pTau, REFLECT*pNu)
 		self.assertGreater(np.max(np.abs(hPlusMirrorWrong + REFLECT*hMinus)), 0.1)
-
 
 
 

@@ -14,11 +14,13 @@ def calculateFanoCoeffsProjection(h_pos : np.ndarray, h_neg : np.ndarray) -> tup
 	'''
 	Calculates the Fano coefficients and their uncertainties for given polarimeter vectors using a projection method.
 
-	The returned polarization vectors :math:`\\vec{B}^\\pm` are the physical polarization vectors of the :math:`\\tau^\\pm` in the nrk-frame
-	as defined in Phys. Rev. D **109**, 032005 (2024), 'doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>'_.
+	The polarization vectors :math:`\\vec{B}^\\pm` and the spin-correlation matrix :math:'C' of :math:`\\tau^\\pm` are returned in the nrk-frame.
+	The nrk-frame is defined in Phys. Rev. D **109**, 032005 (2024), 'doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>'_.
 	"Probing entanglement and testing Bell inequality violation with 𝑒+⁢𝑒−→𝜏+⁢𝜏− at Belle II"
 
-	The spin-correlation matrix :math:`C` is also returned in the nrk-frame.
+	The polarization vectors :math:`\\vec{B}^\\pm` are with the opposite sign as compared to Phys. Rev. D **109**, 032005 (2024),
+	'doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>'_. "Probing entanglement and testing Bell inequality violation with 𝑒+⁢𝑒−→𝜏+⁢𝜏− at Belle II"
+	to return the physical polarization vectors.
 
 	:param h_pos: Polarimeter vector of the tau_pos with shape ``(4,nEvents)``
 	:param h_neg: Polarimeter vector of the tau_neg with shape ``(4,nEvents)``
