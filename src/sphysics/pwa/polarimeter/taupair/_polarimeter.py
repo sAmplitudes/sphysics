@@ -75,11 +75,16 @@ def get_polarimeter_from_J(J: np.ndarray, isParticle: np.ndarray, pTau: np.ndarr
 
 def calculatePolarimeterVectorPiPi(sample: eventselection.Variables, p_positron: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 	'''
-	Calculate the polarimeter vectors for the tau to 1 pi decay.
+	Calculate the polarimeter vectors :math:`h_\\mu` for :math:`\\tau^+\\to\\pi^+\\overline{\\nu}_\\tau` and :math:`\\tau^-\\to\\pi^-\\nu_\\tau`.
 
-	:param sample: Sample of tau to 1 pi decay
+	The polarimeter vectors :math:`h_\\mu` are given in the covariant convention as stated in ``get_polarimeter_from_J``.
+
+	The sample must contain all 4-momenta of :math:`\\tau^+, \\pi^+, \\overline{\\nu}_\\tau, \\tau^-, \\pi^- \\nu_\\tau`
+	with shape ``(4, events)`` as ``tau_pos, pi_pos, nu_pos, tau_neg, pi_neg, nu_neg``, respectively.
+
+	:param sample: Sample of :math:`\\tau^+\\to\\pi^+\\overline{\\nu}_{\\tau}` and :math:`\\tau^-\\to\\pi^-\\nu_{\\tau}` decays
 	:param p_positron: Positron 4-momentum with shape ``(4, events)``
-	:return: Tuple Polarimeter vectors with shape ``(4, events)`` in the order (h_pos, h_neg)
+	:return: Tuple Polarimeter vectors in the order (h_pos, h_neg) with shape ``(4, events)``
 	'''
 	#Boost to CMS-frame
 	pTotal = sample.tau_pos + sample.tau_neg
@@ -119,11 +124,17 @@ def calculatePolarimeterVectorPiPi(sample: eventselection.Variables, p_positron:
 
 def calculatePolarimeterVectorRhoRho(sample: eventselection.Variables, p_positron: np.ndarray) -> tuple:
 	'''
-	Calculate the polarimeter vectors for the tau to 2 pi decay.
+	Calculate the polarimeter vectors :math:`h_\\mu` for :math:`\\tau^+\\to\\pi^+\\pi^0\\overline{\\nu}_\\tau` and
+	:math:`\\tau^-\\to\\pi^-\\pi^0\\nu_\\tau`.
 
-	:param sample: Sample of tau to 2 pi decay
+	The polarimeter vectors :math:`h_\\mu` are given in the covariant convention as stated in ``get_polarimeter_from_J``.
+
+	The sample must contain all 4-momenta of :math:`\\tau^+, \\pi^+, \\pi^0, \\overline{\\nu}_\\tau, \\tau^-, \\pi^- \\pi^0, \\nu_\\tau`
+	with shape ``(4, events)`` as ``tau_pos, pi_pos, pi0_pos, nu_pos, tau_neg, pi_neg, pi0_neg, nu_neg``, respectively.
+
+	:param sample: Sample of :math:`\\tau^+\\to\\pi^+\\pi^0\\overline{\\nu}_\\tau` and :math:`\\tau^-\\to\\pi^-\\pi^0\\nu_\\tau` decays
 	:param p_positron: Positron 4-momentum with shape ``(4, events)``
-	:return: Tuple Polarimeter vectors with shape ``(4, events)`` in the order (h_pos, h_neg)
+	:return: Tuple Polarimeter vectors in the order (h_pos, h_neg) with shape ``(4, events)``
 	'''
 	#Boost to CMS-frame
 	pTotal = sample.tau_pos + sample.tau_neg

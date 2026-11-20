@@ -12,11 +12,16 @@ from ._polarimeter import calculatePolarimeterVectorPiPi, calculatePolarimeterVe
 
 def calculateFanoCoeffsProjection(h_pos : np.ndarray, h_neg : np.ndarray) -> tuple:
 	'''
-	Calculates the Fano Coefficients and their uncertainties for given Polarimeter vectors using the Projection Method.
-	The uncertainties are calculated using the formula for the variance.
+	Calculates the Fano coefficients and their uncertainties for given polarimeter vectors using a projection method.
 
-	:param h_pos: Polarimeter vector of the tau_pos of dimension (4,nEvents)
-	:param h_neg: Polarimeter vector of the tau_neg (4,nEvents)
+	The returned polarization vectors :math:`\\vec{B}^\\pm` are the physical polarization vectors of the :math:`\\tau^\\pm` in the nrk-frame
+	as defined in Phys. Rev. D **109**, 032005 (2024), 'doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>'_.
+	"Probing entanglement and testing Bell inequality violation with 𝑒+⁢𝑒−→𝜏+⁢𝜏− at Belle II"
+
+	The spin-correlation matrix :math:`C` is also returned in the nrk-frame.
+
+	:param h_pos: Polarimeter vector of the tau_pos with shape ``(4,nEvents)``
+	:param h_neg: Polarimeter vector of the tau_neg with shape ``(4,nEvents)``
 	:return: b_pos, b_neg, C, b_pos_unc, b_neg_unc, c_ij_unc
 	'''
 	nEvents = h_pos.shape[1]
@@ -49,8 +54,8 @@ def calculateFanoCoeffsProjection(h_pos : np.ndarray, h_neg : np.ndarray) -> tup
 	b_neg_unc = uncFanoCoef[3:6]
 	c_ij_unc = uncFanoCoef[6:].reshape(3,3)
 
-	b_pos = fanoCoef_i[:3]
-	b_neg = fanoCoef_i[3:6]
+	b_pos = -fanoCoef_i[:3]
+	b_neg = -fanoCoef_i[3:6]
 	c_ij = fanoCoef_i[6:].reshape(3,3)
 
 	#return the Fano Coefficients and uncertainties
@@ -59,12 +64,15 @@ def calculateFanoCoeffsProjection(h_pos : np.ndarray, h_neg : np.ndarray) -> tup
 
 def calculateFanoCoeffsPiPi(sample : eventselection.Variables, p_positron: np.ndarray) -> tuple:
 	'''
-	Calculates the Fano coefficients for the tau to 1 pi decay using the projection method.
+	Calculate the Fano coefficients for :math:`\\tau^+\\to\\pi^+\\overline{\\nu}_\\tau` and :math:`\\tau^-\\to\\pi^-\\nu_\\tau`
+	using the projection method from ``calculateFanoCoeffsProjection``
 
-	:param sample: Sample of tau to 1 pi decay
+	The sample must contain all 4-momenta of :math:`\\tau^+, \\pi^+, \\overline{\\nu}_\\tau, \\tau^-, \\pi^- \\nu_\\tau` with
+	shape ``(4, events)`` as ``tau_pos, pi_pos, nu_pos, tau_neg, pi_neg, nu_neg``, respectively.
+
+	:param sample: sample of :math:`\\tau^+\\to\\pi^+\\overline{\\nu}_{\\tau}` and :math:`\\tau^-\\to\\pi^-\\nu_{\\tau}` decays
 	:param p_positron: Positron 4-momentum with shape ``(4, events)``
-	:return: Tuple of Fano Coefficients and corresponding uncertainties in the order (B_pos, B_neg, C,
-			 B_pos_unc, B_neg_unc, C_unc)
+	:return: Tuple of Fano Coefficients and corresponding uncertainties in the order (B_pos, B_neg, C, B_pos_unc, B_neg_unc, C_unc)
 	'''
 	h_pos, h_neg = calculatePolarimeterVectorPiPi(sample, p_positron)
 	b_pos, b_neg, c_ij, b_pos_unc, b_neg_unc, c_ij_unc = calculateFanoCoeffsProjection(h_pos, h_neg)
@@ -74,12 +82,15 @@ def calculateFanoCoeffsPiPi(sample : eventselection.Variables, p_positron: np.nd
 
 def calculateFanoCoeffsRhoRho(sample : eventselection.Variables, p_positron: np.ndarray) -> tuple:
 	'''
-	Calculates the Fano coefficients for the tau to 2 pi decay using the projection method.
+	Calculate the Fano coefficients for :math:`\\tau^+\\to\\pi^+\\pi^0\\overline{\\nu}_\\tau` and :math:`\\tau^-\\to\\pi^-\\pi^0\\nu_\\tau`
+	using the projection method from ``calculateFanoCoeffsProjection``
 
-	:param sample: Sample of tau to 2 pi decay
+	The sample must contain all 4-momenta of :math:`\\tau^+, \\pi^+, \\pi^0, \\overline{\\nu}_\\tau, \\tau^-, \\pi^- \\pi^0, \\nu_\\tau`
+	with shape ``(4, events)`` as ``tau_pos, pi_pos, pi0_pos, nu_pos, tau_neg, pi_neg, pi0_neg, nu_neg``, respectively.
+
+	:param sample: Sample of :math:`\\tau^+\\to\\pi^+\\pi^0\\overline{\\nu}_\\tau` and :math:`\\tau^-\\to\\pi^-\\pi^0\\nu_\\tau` decays
 	:param p_positron: Positron 4-momentum with shape ``(4, events)``
-	:return: Tuple of Fano Coefficients and corresponding uncertainties in the order (B_pos, B_neg, C,
-			 B_pos_unc, B_neg_unc, C_unc)
+	:return: Tuple of Fano Coefficients and corresponding uncertainties in the order (B_pos, B_neg, C, B_pos_unc, B_neg_unc, C_unc)
 	'''
 	h_pos, h_neg = calculatePolarimeterVectorRhoRho(sample, p_positron)
 	b_pos, b_neg, c_ij, b_pos_unc, b_neg_unc, c_ij_unc = calculateFanoCoeffsProjection(h_pos, h_neg)
