@@ -23,8 +23,8 @@ import numpy as np
 
 # Spin-density parameters of the toy samples in the (n, r, k) component order of the nrk frame.
 # They are chosen such that 0 < 1 + B+.h+ + B-.h- + h+.C.h- < 2 for all unit vectors h+, h-.
-B_POS = -np.array([0.1, -0.1, 0.05])
-B_NEG = -np.array([0.0, 0.1, -0.05])
+B_POS = np.array([-0.1, 0.1, -0.05])
+B_NEG = np.array([0.0, -0.1, 0.05])
 C_IJ = np.array([[-0.5, 0.1,  0.0],
                  [0.05, 0.4, -0.1],
                  [0.0, 0.05,  0.3]])
@@ -156,7 +156,6 @@ class PolarimeterTest(unittest.TestCase):
 		h_pos, h_neg = _generateSpinCorrelatedPolarimeters(rng, 2_000_000)
 
 		b_pos, b_neg, c_ij, b_pos_unc, b_neg_unc, c_ij_unc = taupair.calculateFanoCoeffsProjection(h_pos, h_neg)
-
 		self.assertEqual(b_pos.shape, (3, 1))
 		self.assertEqual(b_neg.shape, (3, 1))
 		self.assertEqual(c_ij.shape, (3, 3))
@@ -184,7 +183,6 @@ class PolarimeterTest(unittest.TestCase):
 			unc = np.concatenate((b_pos_unc.ravel(), b_neg_unc.ravel(), c_ij_unc.ravel()))
 			pulls.append((estimates - truth)/unc)
 		pulls = np.array(pulls)
-
 		self.assertLess(np.abs(np.mean(pulls)), 0.3)
 		self.assertLess(np.abs(np.std(pulls) - 1.), 0.3)
 
