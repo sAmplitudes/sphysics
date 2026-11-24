@@ -23,11 +23,12 @@ import numpy as np
 
 # Spin-density parameters of the toy samples in the (n, r, k) component order of the nrk frame.
 # They are chosen such that 0 < 1 + B+.h+ + B-.h- + h+.C.h- < 2 for all unit vectors h+, h-.
-B_POS = np.array([-0.1, 0.1, -0.05])
-B_NEG = np.array([0.0, -0.1, 0.05])
+B_POS = np.array([0.1, -0.1, 0.05])
+B_NEG = np.array([0.0, 0.1, -0.05])
 C_IJ = np.array([[-0.5, 0.1,  0.0],
                  [0.05, 0.4, -0.1],
                  [0.0, 0.05,  0.3]])
+
 
 REFLECT = np.array([1., -1., -1., -1.])[:, None]  # reverses the spatial components of a four-vector
 
@@ -77,7 +78,7 @@ class PolarimeterTest(unittest.TestCase):
 	'''Tests for the Fano coefficient extraction in sphysics.pwa.polarimeter.taupair.'''
 
 	def _generateTauPairSample(self, nEvents, withPi0):
-		'''Generate tau+ tau- -> pi(pi0) nu pairs at rest in the e+e- CMS, where the e+ is along +z, and boost the
+		'''Generate tau+ tau- -> pi(pi0) nu pairs at rest in the e+e- CMS, where the e+ is along -z, and boost the
 		event along +z into a Belle II like lab frame.
 
 		:return: The sample and the positron 4-momentum in the lab frame and the expected polarimeter vectors of shape
@@ -89,8 +90,8 @@ class PolarimeterTest(unittest.TestCase):
 
 		# nrk axes in the CMS: k along the tau+, r in the plane spanned by the tau+ and the e+ beam
 		k = pTau_pos[1:]/np.linalg.norm(pTau_pos[1:], axis=0)
-		beam = np.array([0., 0., 1.]).reshape(3, 1)
-		cosTheta = k[2]
+		beam = np.array([0., 0., -1.]).reshape(3, 1)
+		cosTheta = np.sum(beam*k, axis=0)
 		sinTheta = np.sqrt(1. - cosTheta**2)
 		r = (beam - cosTheta*k)/sinTheta
 		n = np.cross(beam, k, axis=0)/sinTheta
@@ -98,7 +99,7 @@ class PolarimeterTest(unittest.TestCase):
 		betaGammaLab = 0.28
 		pLab = np.tile(np.array([C.M.upsilon_4S_0*np.sqrt(1. + betaGammaLab**2), 0., 0., C.M.upsilon_4S_0*betaGammaLab]).reshape(4, 1), (1, nEvents))
 		boostLab = lorentz.getBoostFromRestFrame(pLab)
-		pPositron = np.tile(np.array([C.M.upsilon_4S_0/2., 0., 0., np.sqrt(C.M.upsilon_4S_0**2/4. - C.M.e**2)]).reshape(4, 1), (1, nEvents))
+		pPositron = np.tile(np.array([C.M.upsilon_4S_0/2., 0., 0., -np.sqrt(C.M.upsilon_4S_0**2/4. - C.M.e**2)]).reshape(4, 1), (1, nEvents))
 		pPositron = lorentz.applyBoost(boostLab, pPositron)
 
 		sample = sphysics.eventselection.Variables()
@@ -156,6 +157,7 @@ class PolarimeterTest(unittest.TestCase):
 		h_pos, h_neg = _generateSpinCorrelatedPolarimeters(rng, 2_000_000)
 
 		b_pos, b_neg, c_ij, b_pos_unc, b_neg_unc, c_ij_unc = taupair.calculateFanoCoeffsProjection(h_pos, h_neg)
+
 		self.assertEqual(b_pos.shape, (3, 1))
 		self.assertEqual(b_neg.shape, (3, 1))
 		self.assertEqual(c_ij.shape, (3, 3))
@@ -165,7 +167,7 @@ class PolarimeterTest(unittest.TestCase):
 
 		estimates = np.concatenate((b_pos.ravel(), b_neg.ravel(), c_ij.ravel()))
 		unc = np.concatenate((b_pos_unc.ravel(), b_neg_unc.ravel(), c_ij_unc.ravel()))
-		truth = np.concatenate((B_POS, B_NEG, C_IJ.ravel()))
+		truth = np.concatenate((-B_POS, -B_NEG, C_IJ.ravel()))
 		pulls = (estimates - truth)/unc
 		self.assertLess(np.max(np.abs(pulls)), 8.)
 
@@ -174,7 +176,7 @@ class PolarimeterTest(unittest.TestCase):
 		'''Check the calibration of the uncertainties of the Fano coefficients using the pull distribution of many
 		independent toy samples.'''
 		rng = np.random.default_rng(4321)
-		truth = np.concatenate((B_POS, B_NEG, C_IJ.ravel()))
+		truth = np.concatenate((-B_POS, -B_NEG, C_IJ.ravel()))
 		pulls = []
 		for _ in range(50):
 			h_pos, h_neg = _generateSpinCorrelatedPolarimeters(rng, 40_000)
