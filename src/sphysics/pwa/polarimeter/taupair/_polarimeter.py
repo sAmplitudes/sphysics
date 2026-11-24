@@ -25,11 +25,26 @@ def get_polarimeter_from_J(J: np.ndarray, isParticle: np.ndarray, pTau: np.ndarr
 	Comput. Phys. Comm. **64**, 275-295 (1991), `doi: 10.1016/0010-4655(91)90038-M <https://doi.org/10.1016/0010-4655(91)90038-M>`_.
 	"TAUOLA - a library of Monte Carlo programs to simulate decays of polarized τ leptons"
 	and
-	Comput. Phys. Comm. **245**, 109153 (2024), `doi: 10.1016/j.cpc.2024.109153 <https://doi.org/10.1016/j.cpc.2024.109153>`_.
+	Comput. Phys. Comm. **299**, 109153 (2024), `doi: 10.1016/j.cpc.2024.109153 <https://doi.org/10.1016/j.cpc.2024.109153>`_.
 	"The polarimeter vector for τ → 3π ν_τ decays"
 
 	The current and momenta have to be given in the proper reference frame.
 	The returned polarimeter vector is also defined in this frame.
+
+	Sign convention: the polarimeter vector :math:`h^\\mu` is defined covariantly through the spin dependence of the decay rate,
+
+	.. math:: \\mathrm{d}\\Gamma \\propto 1 + h_\\mu s^\\mu ,
+
+	where :math:`s^\\mu` is the spin four-vector of the decaying tau, cf. Eq. (4.2) of
+	Phys. Rev. D **109**, 032005 (2024), `doi: 10.1103/PhysRevD.109.032005 <https://doi.org/10.1103/PhysRevD.109.032005>`_.
+	In the tau rest frame :math:`h^0 = 0` and hence :math:`h_\\mu s^\\mu = -\\vec{h} \\cdot \\vec{s}`, i.e. the three-vector spin analyser
+	:math:`\\vec{a}` of the rate :math:`1 + \\vec{a} \\cdot \\hat{s}` is :math:`\\vec{a} = -\\vec{h}`.
+	For example, for :math:`\\tau^- \\to \\pi^- \\nu_\\tau` the returned vector is :math:`\\vec{h} = -\\hat{p}_\\pi` although the pion is emitted
+	preferentially along the tau spin, and for :math:`\\tau^+ \\to \\pi^+ \\bar{\\nu}_\\tau` it is :math:`\\vec{h} = +\\hat{p}_\\pi`.
+	This is Eqs. (6)-(8) of Comput. Phys. Comm. **299**, 109153 (2024) evaluated with :math:`\\epsilon^{0123} = -1` (``lorentz.epsilon``),
+	where for :math:`\\tau^+` decays (``isParticle == False``) the terms proportional to the V-A coupling ratio reverse sign.
+	It coincides with the vector ``HV`` computed in TAUOLA's hadronic decay routines (e.g. ``DAMPPK``) for :math:`\\tau^-`; note that TAUOLA
+	hands the polarimeter vector to the host program with the opposite overall sign for both charges (``HHV = -ISGN*HV``).
 
 
 	:param J: Decay current with shape ``(4, events)``
@@ -46,7 +61,8 @@ def get_polarimeter_from_J(J: np.ndarray, isParticle: np.ndarray, pTau: np.ndarr
 
 	S = 2.0*( lorentz.lp(Jconj, pNu)*J + lorentz.lp(J, pNu)*Jconj - lorentz.lp(Jconj, J)*pNu )
 
-	S5 = -2.0* math.imag(  math.einsum('mnrs,n,ne,r,re,s,se->me', lorentz.levitCivitaSymbol, lorentz.et, Jconj, lorentz.et, J, lorentz.et, pNu) )
+	# 2 Im eps^{mu nu rho sigma} J*_nu J_rho N_sigma with eps_{0123} = +1, cf. Eq. (7) of doi:10.1016/j.cpc.2024.109153
+	S5 = 2.0*math.imag(math.einsum('mnrs,n,ne,r,re,s,se->me', lorentz.epsilon, lorentz.et, Jconj, lorentz.et, J, lorentz.et, pNu))
 
 	Stot = S5 - va*S
 
@@ -59,11 +75,16 @@ def get_polarimeter_from_J(J: np.ndarray, isParticle: np.ndarray, pTau: np.ndarr
 
 def calculatePolarimeterVectorPiPi(sample: eventselection.Variables, p_positron: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 	'''
-	Calculate the polarimeter vectors for the tau to 1 pi decay.
+	Calculate the polarimeter vectors :math:`h_\\mu` for :math:`\\tau^+\\to\\pi^+\\overline{\\nu}_\\tau` and :math:`\\tau^-\\to\\pi^-\\nu_\\tau`.
 
-	:param sample: Sample of tau to 1 pi decay
+	The polarimeter vectors :math:`h_\\mu` are given in the covariant convention as stated in ``get_polarimeter_from_J``.
+
+	The sample must contain all 4-momenta of :math:`\\tau^+, \\pi^+, \\overline{\\nu}_\\tau, \\tau^-, \\pi^- \\nu_\\tau`
+	with shape ``(4, events)`` as ``tau_pos, pi_pos, nu_pos, tau_neg, pi_neg, nu_neg``, respectively.
+
+	:param sample: Sample of :math:`\\tau^+\\to\\pi^+\\overline{\\nu}_{\\tau}` and :math:`\\tau^-\\to\\pi^-\\nu_{\\tau}` decays
 	:param p_positron: Positron 4-momentum with shape ``(4, events)``
-	:return: Tuple Polarimeter vectors with shape ``(4, events)`` in the order (h_pos, h_neg)
+	:return: Tuple Polarimeter vectors in the order (h_pos, h_neg) with shape ``(4, events)``
 	'''
 	#Boost to CMS-frame
 	pTotal = sample.tau_pos + sample.tau_neg
@@ -103,11 +124,17 @@ def calculatePolarimeterVectorPiPi(sample: eventselection.Variables, p_positron:
 
 def calculatePolarimeterVectorRhoRho(sample: eventselection.Variables, p_positron: np.ndarray) -> tuple:
 	'''
-	Calculate the polarimeter vectors for the tau to 2 pi decay.
+	Calculate the polarimeter vectors :math:`h_\\mu` for :math:`\\tau^+\\to\\pi^+\\pi^0\\overline{\\nu}_\\tau` and
+	:math:`\\tau^-\\to\\pi^-\\pi^0\\nu_\\tau`.
 
-	:param sample: Sample of tau to 2 pi decay
+	The polarimeter vectors :math:`h_\\mu` are given in the covariant convention as stated in ``get_polarimeter_from_J``.
+
+	The sample must contain all 4-momenta of :math:`\\tau^+, \\pi^+, \\pi^0, \\overline{\\nu}_\\tau, \\tau^-, \\pi^- \\pi^0, \\nu_\\tau`
+	with shape ``(4, events)`` as ``tau_pos, pi_pos, pi0_pos, nu_pos, tau_neg, pi_neg, pi0_neg, nu_neg``, respectively.
+
+	:param sample: Sample of :math:`\\tau^+\\to\\pi^+\\pi^0\\overline{\\nu}_\\tau` and :math:`\\tau^-\\to\\pi^-\\pi^0\\nu_\\tau` decays
 	:param p_positron: Positron 4-momentum with shape ``(4, events)``
-	:return: Tuple Polarimeter vectors with shape ``(4, events)`` in the order (h_pos, h_neg)
+	:return: Tuple Polarimeter vectors in the order (h_pos, h_neg) with shape ``(4, events)``
 	'''
 	#Boost to CMS-frame
 	pTotal = sample.tau_pos + sample.tau_neg

@@ -24,6 +24,12 @@ class HadronicTensors(Kinematics):
 	Class for calculating various three-body hadronic currents
 
 	The isobar system is always the (12) system.
+
+	The tensors are those of Krinner and Paul, Eur. Phys. J. C 81 (2021) 1073, formulated for the :math:`\\tau^-` decay
+	(particle 1 is the :math:`\\pi^+`). The current of the charge-conjugate decay follows from the CP transformation
+	:math:`\\Lambda_P t(\\mathcal{R} p)`, where :math:`\\mathcal{R}` reverses all three-momenta and :math:`\\Lambda_P = \\mathrm{diag}(1,-1,-1,-1)`:
+	the :math:`1^+` and :math:`0^-` currents are unchanged, the :math:`1^-` current (a pseudo-vector) changes sign
+	(see :meth:`sphysics.pwa.threebody.tau.Tau2ThreeCharedPi.calcHadronicCurrentsUnsymmetrized`).
 	'''
 
 	def reset(self) -> None:
@@ -180,7 +186,7 @@ class HadronicTensors(Kinematics):
 
 	@property
 	def wave_1p_2p_P(self) -> np.ndarray:
-		''' Current for wave :math:`1^+ \\to [ (12)_2^+ (3) ]_D` '''
+		''' Current for wave :math:`1^+ \\to [ (12)_2^+ (3) ]_P` '''
 		return math.einsum('mne,n,r,nre,re->me', self.g123, lorentz.et, lorentz.et, self.tensor_12_Dwave, self.tensor_123_Pwave)
 
 	@property
@@ -195,9 +201,19 @@ class HadronicTensors(Kinematics):
 
 	@property
 	def wave_1m_1m_P(self) -> np.ndarray:
-		''' Current for wave :math:`1^- \\to [ (12)_1^- (3) ]_P` '''
+		''' Current for wave :math:`1^- \\to [ (12)_1^- (3) ]_P`
+
+		Convention:
+		:math:`\\epsilon^{\\mu\\nu\\rho\\sigma} p_{1,\\nu} p_{2,\\rho} p_{3,\\sigma}` with :math:`\\epsilon_{0123} = +1`,
+		i.e. the vector structure :math:`V_3` of Kühn and Mirkes, Z. Phys. C 56 (1992) 661, with :math:`q_3 = p_1`
+		the odd-charge pion, as implemented in TAUOLA, and :math:`p_\\epsilon` of Krinner and Paul with
+		:math:`f_\\epsilon^{(12)} = +1`. Kühn and Mirkes write the vector current as :math:`i V_3 F_3`;
+		a coupling of this wave therefore corresponds to :math:`i F_3`.
+		'''
+		# eps(p123, T12, T123) = eps(p1, p2, p3); the operand order deliberately differs from eps(pX, TX, T12) in
+		# Eq. (21) of Krinner and Paul, which gives -eps(p1, p2, p3) and thus contradicts their Eq. (35)
 		return math.einsum('mnrs,n,ne,r,re,s,se->me',
-		                    lorentz.levitCivitaSymbol, lorentz.et, self.p123, lorentz.et, self.tensor_123_Pwave, lorentz.et, self.tensor_12_Pwave)
+		                    lorentz.epsilon, lorentz.et, self.p123, lorentz.et, self.tensor_12_Pwave, lorentz.et, self.tensor_123_Pwave)
 
 
 	@property
@@ -227,9 +243,10 @@ class HadronicTensors(Kinematics):
 class Wave:
 	"""Class representing a 3-body partial wave, i.e. a set of quantum numbers describing the state of three pseudoscalar particles
 
-	String label formats are e.g.
+	String label formats are ``<J_X><P_X>_<isobar>_<L>``, optionally prefixed by ``wave_``, where the isobar is given by its
+	quantum numbers ``<J_isobar><P_isobar>`` or by a name followed by the quantum numbers in square brackets, e.g.
 		- 1p_1m_S
-		- 1p_rho(770)_S
+		- wave_1p_1m_S
 		- 1p_rho(770)[1m]_S
 	"""
 	chargeLabel = {'m': -1, 'p': +1}
@@ -250,18 +267,34 @@ class Wave:
 
 	@classmethod
 	def fromString(cls, name: str)-> Wave:
+		"""Construct a :class:`Wave` from its string label, e.g. ``'wave_1p_1m_S'``, ``'1p_1m_S'`` or ``'1p_rho(770)[1m]_S'``.
 
-		X, isobar, L = name.lstrip('wave_').split('_')
-		J_X, P_X = list(X)
-		if '[' in isobar:
-			isobarLabel, isobarQN = isobar.split(']')
-			J_isobar, P_isobar, *_ = list(isobarQN)
-		elif len(isobar) == 2:
-			J_isobar, P_isobar = list(isobar)
-			isobarLabel = None
+		Raises:
+			ValueError: If the label cannot be parsed, e.g. if the isobar quantum numbers are missing
+		"""
+		label = name[len('wave_'):] if name.startswith('wave_') else name
+		parts = label.split('_')
+		if len(parts) != 3:
+			log.raiseException(ValueError, f"Cannot parse wave label '{name}': expected the format '<J_X><P_X>_<isobar>_<L>', e.g. '1p_rho(770)[1m]_S'")
+		X, isobar, L = parts
+		if '[' in isobar or ']' in isobar:
+			isobarLabel, _, isobarQN = isobar.partition('[')
+			if not isobarLabel or not isobarQN.endswith(']'):
+				log.raiseException(ValueError, f"Cannot parse the isobar '{isobar}' in wave label '{name}': "
+				                               f"expected '<name>[<J><P>]', e.g. 'rho(770)[1m]'.")
+			isobarQN = isobarQN[:-1]
 		else:
-			isobarLabel = isobar
-			J_isobar = P_isobar = None
+			isobarLabel, isobarQN = None, isobar
+		for quantumNumbers, system in ((X, 'X'), (isobarQN, 'isobar')):
+			if len(quantumNumbers) != 2 or not quantumNumbers[0].isdigit() or quantumNumbers[1] not in cls.chargeLabel:
+				log.raiseException(ValueError, f"Cannot parse the {system} quantum numbers '{quantumNumbers}' in wave label '{name}': "
+				                               f"expected '<J><P>' with P in {list(cls.chargeLabel)}, e.g. '1p'. "
+				                               f"Isobars must be given as e.g. 'rho(770)[1m]' or '1m'.")
+		if L not in _constants.Constants.spectroscopyMomentumNotation:
+			log.raiseException(ValueError, f"Cannot parse the orbital angular momentum '{L}' in wave label '{name}': "
+			                               f"expected one of {list(_constants.Constants.spectroscopyMomentumNotation)}.")
+		J_X, P_X = list(X)
+		J_isobar, P_isobar = list(isobarQN)
 		return cls(J_X, P_X, J_isobar, P_isobar, isobarLabel, L)
 
 

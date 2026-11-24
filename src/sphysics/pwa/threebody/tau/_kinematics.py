@@ -7,9 +7,12 @@ from ...._constants import Constants as C
 
 from .._kinematics import Kinematics
 from ...utils import calculateIsobarTreeHelicityAngles
+from ....utils import Logger
 
 
 # pylint: disable=invalid-name,attribute-defined-outside-init,too-many-public-methods
+
+log = Logger("tau")
 
 class tau3Kinematics(Kinematics):
 	"""
@@ -398,11 +401,22 @@ def getTauMomentumComponentsCMS(pHadron, tauE, tauM, orthoDirection = np.array([
 
 	All given in the :math:`e^+ e^-` CM frame.
 
-	:param pHadron: Hadronic four-momentum [E,px,py,pz]
+	:param pHadron: Hadronic four-momentum [E,px,py,pz] of the shape (4, nEvents)
 	:param tauE: Energy of the tauon
 	:param tauM: Mass of the tauon
-	:param orthoDirection: direction used to define the orthogonal coordinate system
+	:param orthoDirection: direction used to define the orthogonal coordinate system; its length is irrelevant.
+	                       It must not be (anti-)parallel to any hadron momentum.
+	:raises ValueError: If events are outside the kinematic limits of the :math:`\\tau` decay, i.e. :math:`|\\cos\\theta| > 1`
+	                    (beyond a rounding tolerance of :math:`10^{-12}`), e.g. due to the detector resolution.
+	                    Such events have to be removed before calculating the decay amplitudes.
+	                    Also raised if the hadron momentum of an event is (anti-)parallel to `orthoDirection`, for which the
+	                    orthogonal components are undefined. If this happens, change the `orthoDirection` or implement handling of edge cases.
 	"""
+	orthoDirection = math.asarray(orthoDirection, dtype=np.float64)
+	orthoDirectionNorm = math.sqrt(math.sum(orthoDirection**2))
+	if orthoDirection.shape != (3,) or not orthoDirectionNorm > 0.:
+		log.raiseException(ValueError, f"`orthoDirection` must be a non-zero three-vector, but is {orthoDirection}!")
+	orthoDirection = orthoDirection/orthoDirectionNorm
 	tauAbsP = math.sqrt(tauE**2 - tauM**2)
 	hadE = pHadron[0]
 	hadAbsP = math.sqrt(math.sum(pHadron[1:4]**2, axis = 0))
@@ -410,6 +424,12 @@ def getTauMomentumComponentsCMS(pHadron, tauE, tauM, orthoDirection = np.array([
 
 	# helicity angle in CMS
 	cosT = calcTauHelicityCosTheta_CMS(tauE, tauM**2, hadE, hadM2)
+	outsideLimits = math.abs(cosT) > 1. + 1e-12
+	if math.any(outsideLimits):
+		log.raiseException(ValueError, f"{math.sum(outsideLimits)} of {cosT.size} events are outside the kinematic limits of the tau decay "
+		                               f"(largest |cos(theta)| - 1 = {math.max(math.abs(cosT[outsideLimits])) - 1.:.3e}). "
+		                               "Remove these events before calculating the decay amplitudes.")
+	cosT = math.clip(cosT, -1., 1.) # rounding
 	sinT = math.sqrt(1. - cosT**2)
 
 	pTauParallelUnit   = math.empty(pHadron.shape, pHadron)
@@ -423,7 +443,14 @@ def getTauMomentumComponentsCMS(pHadron, tauE, tauM, orthoDirection = np.array([
 	pTauOrtho1Unit   = math.empty(pHadron.shape, pHadron)
 	pTauOrtho1Unit[0]   = 0.
 	pTauOrtho1Unit[1:]  = np.cross(pTauParallelUnit[1:],orthoDirection, axis=0)
-	pTauOrtho1Unit[1:] /= math.sqrt(np.sum(pTauOrtho1Unit[1:]**2, axis = 0))[None,:]
+	norm = math.sqrt(math.sum(pTauOrtho1Unit[1:]**2, axis = 0)) # sine of the angle between the hadron momentum and orthoDirection
+	# for hadron momenta (anti-)parallel to orthoDirection the cross product vanishes and the orthogonal components are undefined
+	degenerate = norm < 1e-10
+	if math.any(degenerate):
+		log.raiseException(ValueError, f"{math.sum(degenerate)} of {norm.size} events have a hadron momentum (anti-)parallel to the reference direction "
+		                               f"orthoDirection = {orthoDirection}, for which the orthogonal components of the tau momentum are undefined. "
+		                               "Use a different `orthoDirection`.")
+	pTauOrtho1Unit[1:] /= norm[None,:]
 
 	pTauOrtho2Unit   = math.empty(pHadron.shape, pHadron)
 	pTauOrtho2Unit[0]   = 0.

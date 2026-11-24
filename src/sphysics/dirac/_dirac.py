@@ -8,6 +8,7 @@
 from __future__ import absolute_import, print_function, division
 
 import numpy as np
+import tensorflow as tf
 
 from .. import math
 from .. import lorentz
@@ -101,23 +102,42 @@ class Formalism(object):
 
 	def weakLepTensor_unpolarizedDecay(self, pTau, pNu, isParticle):
 		"""
-		:math:`L_{\\mu\\nu} = \\frac{1}{2} \\sum_h l^\\mu_h (l_h^\\nu)^*`
+		Unpolarized leptonic tensor
 
-		Four-momenta are :math:`[E, p_x, p_y, p_z]` for every event
+		.. math:: L^{\\mu\\nu} = \\frac{1}{2} \\sum_h l^\\mu_h (l_h^\\nu)^*
+		          = 4 \\left[ p_\\tau^\\mu p_{\\nu_\\tau}^\\nu + p_{\\nu_\\tau}^\\mu p_\\tau^\\nu - g^{\\mu\\nu} \\, p_\\tau \\cdot p_{\\nu_\\tau}
+		          \\pm i \\epsilon^{\\alpha\\beta\\mu\\nu} p_{\\nu_\\tau,\\alpha} p_{\\tau,\\beta} \\right]
 
-		:param pTau: Four-momenta of the decaying :math:`\\tau^{-}`
-		:param pNu: Four-momenta of the final-state :math:`\\nu`
+		with :math:`\\epsilon_{0123} = +1`, i.e. :math:`\\epsilon^{0123} = -1` (convention of Kühn and Mirkes, see :data:`sphysics.lorentz.epsilon`),
+		and the upper (lower) sign for :math:`\\tau^-` (:math:`\\tau^+`) decays.
+		For :math:`\\tau^-` this is the unpolarized lepton tensor of Kühn and Mirkes, Z. Phys. C 56 (1992) 661, Eqs. (5) and (6),
+		with :math:`g_V = g_A = 1`, i.e. :math:`L^{(1)}_{\\mu\\nu} - L^{(3)}_{\\mu\\nu}` with the indices raised.
+
+		Four-momenta are :math:`[E, p_x, p_y, p_z]` for every event. The four-momenta can be numpy arrays or TensorFlow tensors.
+
+		:param pTau: Four-momenta of the decaying :math:`\\tau^{\\mp}` of the shape (4, nEvents)
+		:param pNu: Four-momenta of the final-state :math:`\\nu` or :math:`\\bar{\\nu}` of the shape (4, nEvents)
+		:param isParticle: True for :math:`\\tau^{-}` (particle) decays, False for :math:`\\tau^{+}` (antiparticle) decays,
+		                   for which the sign of the antisymmetric :math:`\\epsilon` term is reversed.
+		                   Boolean scalar (Python or numpy bool) or boolean array/tensor of the shape (nEvents,)
+		:raises ValueError: If `isParticle` is not boolean, e.g. an array of charges
 		"""
-		fakk = math.full((1,pTau.shape[-1]), 1., pTau)
-		if isParticle is False:
-			fakk *= -1.
-		if not np.isscalar(isParticle):
-			fakk[:,~isParticle] = -1.
-		retVal = 4.j * fakk * math.einsum('ijkl,ke,le,i,j->ije',lorentz.levitCivitaSymbol,pNu,pTau,lorentz.et,lorentz.et)
-		retVal += 4. * math.einsum('ie,je->ije', pTau, pNu)
-		retVal += 4. * math.einsum('ie,je->ije', pNu, pTau)
-		retVal -= 4. * math.einsum('ie,ie,i,kl->kle', pTau, pNu, lorentz.et, lorentz.eta)
-		return retVal
+		isParticle = math.asarray(isParticle)
+		if isParticle.dtype != bool:
+			raise ValueError(f"`isParticle` must be boolean (True for tau- and False for tau+ decays), but has the data type {isParticle.dtype}!")
+		# sign of the epsilon term: +1 for particle (tau-) decays, -1 for antiparticle (tau+) decays
+		if isinstance(pTau, tf.Tensor):
+			sign = 2.*tf.cast(isParticle, pTau.dtype) - 1.
+		else:
+			sign = np.where(isParticle, 1., -1.)
+		# the momenta are the first operands of the einsums, such that the TensorFlow implementation is used for tensors;
+		# free indices m, n = mu, nu; contracted indices a, b = alpha, beta
+		# antisymmetric part: 4 i eps^{alpha beta mu nu} pNu_alpha pTau_beta with eps_{0123} = +1 (lorentz.epsilon), cf. Kuehn and Mirkes eq. (6)
+		antisymmetricPart = 4. * sign * math.einsum('ae,be,abmn,a,b->mne', pNu, pTau, lorentz.epsilon, lorentz.et, lorentz.et)
+		symmetricPart = 4. * math.einsum('me,ne->mne', pTau, pNu) \
+		              + 4. * math.einsum('me,ne->mne', pNu, pTau) \
+		              - 4. * math.einsum('ae,ae,a,mn->mne', pTau, pNu, lorentz.et, lorentz.eta)
+		return math.complex(symmetricPart, antisymmetricPart)
 
 	def getParticleSpinor(self, p: np.ndarray, isUp: np.ndarray, isPart: np.ndarray) -> np.ndarray:
 		"""

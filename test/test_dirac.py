@@ -70,6 +70,20 @@ class DiracTest(unittest.TestCase):
 		tensor = (sphysics.lorentz.tensorproduct(up, np.conj(up)) + sphysics.lorentz.tensorproduct(down, sphysics.math.conjugate(down)))/2
 		self.assertAlmostEqual(np.max(np.abs(tensor - dirac.weakLepTensor_unpolarizedDecay(self.pTau, self.pNu, False))), 0, 10)
 
+	def test_gammaMatrices(self):
+		'''Clifford algebra of the gamma matrices, gamma5 = i gamma^0 gamma^1 gamma^2 gamma^3, and the trace identity
+		Tr[gamma^mu gamma^nu gamma^rho gamma^sigma gamma5] = 4i eps^{mu nu rho sigma} with eps^{0123} = -1 (sphysics.lorentz.epsilon),
+		which fixes the sign of the epsilon term of the leptonic tensor.'''
+		gamma = np.asarray(self.dirac.gamma)
+		gamma5 = self.dirac.gamma5
+		unit = np.identity(4)
+		anticommutator = np.einsum('mij,njk->mnik', gamma, gamma) + np.einsum('nij,mjk->mnik', gamma, gamma)
+		self.assertAlmostEqual(np.max(np.abs(anticommutator - 2.*np.einsum('mn,ik->mnik', sphysics.lorentz.eta, unit))), 0., 12)
+		self.assertAlmostEqual(np.max(np.abs(gamma5 - 1j*gamma[0] @ gamma[1] @ gamma[2] @ gamma[3])), 0., 12)
+		self.assertAlmostEqual(np.max(np.abs(gamma5 @ gamma5 - unit)), 0., 12)
+		trace = np.einsum('mij,njk,rkl,slo,oi->mnrs', gamma, gamma, gamma, gamma, gamma5)
+		self.assertAlmostEqual(np.max(np.abs(trace - 4j*sphysics.lorentz.epsilon)), 0., 12)
+
 
 if __name__ == '__main__':
 	sphysics.random.generators.setSeed(1234)

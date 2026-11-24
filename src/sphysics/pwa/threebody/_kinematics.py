@@ -76,8 +76,12 @@ class Kinematics(object):
 		self._helicityAngles_13 = None
 
 	def __getstate__(self):
-		self.reset() # clear data before pickling this object.
-		return self.__dict__.copy()
+		# Clear event data and cached quantities before pickling this object without modifying the object itself:
+		# reset() is applied to a shallow copy of the object, whose state is returned.
+		clone = object.__new__(type(self))
+		clone.__dict__.update(self.__dict__)
+		clone.reset()
+		return clone.__dict__
 
 	def __setstate__(self, state):
 		self.__dict__.update(state)

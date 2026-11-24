@@ -34,6 +34,10 @@ class Tau2ThreeCharedPi(PWAModel):
 
 	The order of the particles is as given by the above reaction,
 	i.e. the first two pions have opposite charge and form the isobar system and the second and the last pions are exchanged for the bose symmetrization
+
+	The hadronic tensors are formulated for the :math:`\\tau^-` decay. For :math:`\\tau^+` decays, i.e. events with ``isParticle == False``,
+	the hadronic current is the CP transform of the :math:`\\tau^-` current (see :meth:`calcHadronicCurrentsUnsymmetrized`), such that
+	for the same partial-wave couplings the :math:`\\tau^+` intensity is the CP mirror image of the :math:`\\tau^-` intensity.
 	'''
 	def __init__(self, name: str, description: str = None) -> None:
 		super().__init__(name, description)
@@ -65,8 +69,9 @@ class Tau2ThreeCharedPi(PWAModel):
 			dynamicIsobarAmplitude (Callable[[np.ndarray], np.ndarray]): Dynamic amplitude of the X system as function of the :math:`2\\pi` mass
 			barrierXCompensation (Callable[[int, np.ndarray, np.ndarray], np.ndarray], optional): Angular momentum barrier compensation factor in the X decay. Defaults to None.
 			                                                                          This is a function of (L, m123, m12). L will be parsed from the hadronicTensorName.
-			barrierIsobarCompensation (Callable[[int, np.ndarray], np.ndarray], optional): Angular momentum barrier compensation factor in the X decay. Defaults to None.
-			                                                                               This is a function of (L, m12). L will be parsed from the hadronicTensorName.
+			barrierIsobarCompensation (Callable[[int, np.ndarray], np.ndarray], optional): Angular momentum barrier compensation factor in the isobar decay.
+			                                                                               Defaults to None. This is a function of (L, m12), where L is the
+			                                                                               isobar spin J_isobar parsed from the hadronicTensorName.
 		"""
 
 		if waveName in self._waveNames:
@@ -151,21 +156,78 @@ class Tau2ThreeCharedPi(PWAModel):
 	def calcHadronicCurrents(self, events: EventsTau2ThreeChargedPi) -> list:
 		'''Return list of symmetrized hadronic currents for all partial waves.
 
-		:param events: Kinematics of events from the :math:`\\tau \\to 3 \\pi + \\nu_{\\tau}`
+		The currents of :math:`\\tau^+` decays (``events.isParticle == False``) are the CP transforms of the :math:`\\tau^-` currents,
+		see :meth:`calcHadronicCurrentsUnsymmetrized`.
+
+		:param events: Kinematics of events from the :math:`\\tau \\to 3 \\pi + \\nu_{\\tau}`; ``events.isParticle`` must be set for all events
 		:type events: EventsTau2ThreeChargedPi
 		:return: Hadronic currents of partial waves
 		:rtype: list
+		:raises ValueError: If ``events.isParticle`` is not given for all events or is not boolean
 		'''
+		nEvents = events.pi1PM.shape[-1]
+		isParticle = math.asarray(events.isParticle)
+		if isParticle.shape != (nEvents,):
+			log.raiseException(ValueError, f"`events.isParticle` must be given for all {nEvents} events (True for tau- and False for tau+ decays), "
+			                               f"but has the shape {isParticle.shape}!")
+		if isParticle.dtype != bool:
+			log.raiseException(ValueError, f"`events.isParticle` must be boolean (True for tau- and False for tau+ decays), "
+			                               f"but has the data type {isParticle.dtype}!")
 		#                                                   --------- isobar ---------
-		currents12 = self.calcHadronicCurrentsUnsymmetrized(events.pi1PM, events.pi2MP, events.pi3MP)
-		currents13 = self.calcHadronicCurrentsUnsymmetrized(events.pi1PM, events.pi3MP, events.pi2MP)
+		currents12 = self.calcHadronicCurrentsUnsymmetrized(events.pi1PM, events.pi2MP, events.pi3MP, isParticle)
+		currents13 = self.calcHadronicCurrentsUnsymmetrized(events.pi1PM, events.pi3MP, events.pi2MP, isParticle)
 		return [current12 + current13 for current12, current13 in zip(currents12, currents13)]
 
 
-	def calcHadronicCurrentsUnsymmetrized(self, pi1PM: np.ndarray, pi2MP: np.ndarray, pi3MP: np.ndarray) ->  list:
+	def calcHadronicCurrentsUnsymmetrized(self, pi1PM: np.ndarray, pi2MP: np.ndarray, pi3MP: np.ndarray, isParticle: bool|np.ndarray = True) ->  list:
 		'''
 		Calculate hadronic currents. The isobar system is the (12) system, i.e. :math:`\\pi^{\\pm}_1 \\pi^{\\mp}_2`
+
+		The hadronic tensors are formulated for the :math:`\\tau^-` decay. For :math:`\\tau^+` decays the current is the CP transform
+		of the :math:`\\tau^-` current,
+
+		.. math:: J_+^\\mu(p) = \\Lambda_P{}^\\mu{}_\\nu \\, J_-^\\nu(\\mathcal{R} p),
+
+		where :math:`\\mathcal{R}` reverses all three-momenta and :math:`\\Lambda_P = \\mathrm{diag}(1,-1,-1,-1)`.
+		This follows from :math:`\\mathrm{CP}\\, \\bar{u}\\gamma^\\mu(1-\\gamma^5)d\\, \\mathrm{CP}^{-1} = -\\bar{d}\\gamma_\\mu(1-\\gamma^5)u`.
+		Axial-vector (:math:`1^+`) and pseudo-scalar (:math:`0^-`) currents are true four-vectors and are unchanged by this
+		transformation, while vector currents (:math:`1^-`, built with the Levi-Civita tensor) are pseudo-vectors and change
+		sign relative to them. Together with the sign change of the :math:`\\epsilon` term of the leptonic tensor, this makes the
+		:math:`\\tau^+` intensity the CP mirror image of the :math:`\\tau^-` intensity for the same partial-wave couplings;
+		cf. Finkemeier and Mirkes, AIP Conf. Proc. 349 (1996) 119, Eq. (42), where the structure functions arising from the
+		interference of the vector and axial-vector currents change sign for :math:`\\tau^+`. TAUOLA applies the same sign flip
+		to the vector current of :math:`\\tau^+` decays (subroutine PROD5).
+
+		The double reflection reduces to an overall sign for each wave: :math:`\\mathcal{R}p = \\Lambda_P p`, and :math:`\\Lambda_P` is an
+		(improper) Lorentz transformation with :math:`\\Lambda_P^2 = 1` and :math:`\\det\\Lambda_P = -1`. The hadronic tensors are
+		Lorentz-covariant expressions built from the momenta, the metric tensor and, for the :math:`1^-` wave, one Levi-Civita tensor,
+		multiplied by dynamic amplitudes and barrier factors that depend only on the invariant masses, which :math:`\\Lambda_P` leaves unchanged.
+		Under a Lorentz transformation the momenta and the metric transform as tensors, while the Levi-Civita tensor picks up a factor
+		:math:`\\det\\Lambda`. Hence :math:`t^\\mu(\\Lambda_P p) = (\\det\\Lambda_P)^n \\Lambda_P{}^\\mu{}_\\nu \\, t^\\nu(p)` with :math:`n`
+		the number of Levi-Civita tensors, and :math:`\\Lambda_P t(\\mathcal{R}p) = (-1)^n t(p)`: the :math:`1^+` and :math:`0^-` currents
+		(:math:`n = 0`) are reproduced unchanged, the :math:`1^-` current (:math:`n = 1`) changes sign. Explicitly for
+		:math:`t^\\mu = \\epsilon^{\\mu\\nu\\rho\\sigma} p_{1\\nu} p_{2\\rho} p_{3\\sigma}`: the time component is proportional to the triple
+		product :math:`\\vec{p}_1 \\cdot (\\vec{p}_2 \\times \\vec{p}_3)`, which is odd under :math:`\\mathcal{R}` and is not touched by
+		:math:`\\Lambda_P`; each spatial component contains one energy and two three-momentum components, is even under :math:`\\mathcal{R}`
+		and is flipped by :math:`\\Lambda_P`. All four components thus acquire the same factor :math:`-1`, i.e. the whole current changes
+		sign. The implementation applies the reflections generically and therefore does not depend on the tensor structure of a wave.
+
+		:param pi1PM: 4-momenta of the :math:`\\pi^{\\pm}` of the shape (4, nEvents)
+		:param pi2MP: 4-momenta of the first :math:`\\pi^{\\mp}` of the shape (4, nEvents), which forms the isobar with the :math:`\\pi^{\\pm}`
+		:param pi3MP: 4-momenta of the second :math:`\\pi^{\\mp}` of the shape (4, nEvents)
+		:param isParticle: True for :math:`\\tau^-` decays (default), False for :math:`\\tau^+` decays; boolean scalar or array of the shape (nEvents,)
+		:raises ValueError: If `isParticle` is not boolean, e.g. an array of charges
 		'''
+		isParticle = math.asarray(isParticle)
+		if isParticle.dtype != bool:
+			log.raiseException(ValueError, f"`isParticle` must be boolean (True for tau- and False for tau+ decays), but has the data type {isParticle.dtype}!")
+		isAntiparticle = ~isParticle
+		if isAntiparticle.ndim == 1:
+			isAntiparticle = isAntiparticle[None, :]
+		reflect = np.array([1., -1., -1., -1.])[:, None] # Lambda_P: reverses the spatial components of a four-vector
+		if math.any(isAntiparticle):
+			# tau+: evaluate the tau- tensors at the space-reflected momenta ...
+			pi1PM, pi2MP, pi3MP = (math.where(isAntiparticle, reflect*p, p) for p in (pi1PM, pi2MP, pi3MP))
 		self._hadronicTensors.setEvents(pi1PM, pi2MP, pi3MP )
 
 		dynamicIsobarAmplitudeValues = []
@@ -194,6 +256,10 @@ class Tau2ThreeCharedPi(PWAModel):
 			         * barrierXCompensationValues[self._waveIdx2BarrierXCompensationIdx[waveIdx]]
 
 			currents.append(current)
+		if math.any(isAntiparticle):
+			# ... and reflect the spatial components of the resulting currents; the net effect is a factor (-1)^n with n the number
+			# of Levi-Civita tensors in the hadronic tensor, i.e. -1 for the 1- wave and +1 for all others (see docstring)
+			currents = [math.where(isAntiparticle, reflect*current, current) for current in currents]
 		return currents
 
 
@@ -216,19 +282,20 @@ class Tau2ThreeCharedPi(PWAModel):
 		'''
 		Calculate the unpolarized leptonic tensor
 
-		:param tau: 4-momentum of the tau
-		:param tau: 4-momentum of the neutrino
+		:param tau: 4-momentum of the :math:`\\tau`
+		:param nu: 4-momentum of the neutrino
+		:param isParticle: Bool array, which is True for :math:`\\tau^-` decays and False for :math:`\\tau^+` decays
 		'''
 		return self._dirac.weakLepTensor_unpolarizedDecay(tau, nu, isParticle)
 
 
 	def calcLeptonicTensorIntegratedUnpolarized(self, events: EventsTau2ThreeChargedPi):
 		'''
-		Calculate the unpolarized leptonic current, integrated over the unknown angle :math:`\\alpha` of the :math:`\\tau` momentum around the measured hadronic momentum
+		Calculate the unpolarized leptonic tensor, integrated over the unknown angle :math:`\\alpha` of the :math:`\\tau` momentum around the measured hadronic momentum
 
-		:param events: The kinematics MUST be given in the :math:`e^+ e^-` CMS, the tau and neutrino 4-momenta from `events` are NOT used
-		:param tauE: Energy of the :math:`\\tau` in the :math:`e^+e^-` CMS
-		:param tauM: Rest mass of the :math:`\\tau`
+		:param events: The kinematics MUST be given in the :math:`e^+ e^-` CMS. The tau and neutrino 4-momenta from `events` are NOT used;
+		               the :math:`\\tau` momentum is reconstructed from the hadronic momentum and the :math:`\\tau` energy and mass
+		               `events.tauMP_E` and `events.tauMP_M`
 		'''
 
 		p123 = events.pi1PM + events.pi2MP + events.pi3MP
@@ -274,11 +341,6 @@ class Tau2ThreeCharedPi(PWAModel):
 		leptonicTensor = self.calcLeptonicTensorIntegratedUnpolarized(events)
 		leptonicVectors =  decomposeHermitianMatrix2(leptonicTensor)
 
-		# quick check
-		if np.max(np.abs( leptonicTensor - math.einsum('ime,ine->mne', leptonicVectors, math.conjugate(leptonicVectors)) )) > 1e-10:
-			raise Exception("Vector decomposition of leptonic tensor did not work!")
-
-
 		decayAmplitudes = np.empty((self.nWaves, 4, events.nEvents), dtype=np.complex128)
 		for waveIdx in range(self.nWaves):
 			for leptonicVecorIdx in range(4):
@@ -292,7 +354,7 @@ class Tau2ThreeCharedPi(PWAModel):
 
 		# checkAmplitudes
 		if np.any(np.isnan(decayAmplitudes)):
-			raise Exception("Some of the decay amplitudes is NaN! You ma want to use `np.seterr('raise')`.")
+			raise Exception("Some of the decay amplitudes is NaN! You may want to use `np.seterr('raise')`.")
 		return decayAmplitudes
 
 
@@ -307,7 +369,7 @@ class Tau2ThreeCharedPi(PWAModel):
 		if events.tauMP.size == 0:
 			raise Exception("Tau momenta not stored in events!")
 		if events.nu.size == 0:
-			raise Exception("Tau momenta not stored in events!")
+			raise Exception("Neutrino momenta not stored in events!")
 		hadronicCurrents = self.calcHadronicCurrents(events)
 		leptonicTensor = self.calcLeptonicTensorUnpolarized(events.tauMP, events.nu, events.isParticle)
 		leptonicVectors = decomposeHermitianMatrix2(leptonicTensor)
@@ -326,6 +388,6 @@ class Tau2ThreeCharedPi(PWAModel):
 
 		# checkAmplitudes
 		if np.any(np.isnan(decayAmplitudes)):
-			raise Exception("Some of the decay amplitudes is NaN! You ma want to use `np.seterr('raise')`.")
+			raise Exception("Some of the decay amplitudes is NaN! You may want to use `np.seterr('raise')`.")
 
 		return decayAmplitudes

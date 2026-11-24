@@ -6,11 +6,13 @@ set(_TESTS
     "generators"
     "dirac"
     "tau_pwa"
+    "hadronic_currents"
     "kinematics"
     "variables"
     "utils"
     "polarimeter"
-    "omnesFunctions")
+    "omnesFunctions"
+    "KMatrixFormalism")
 
 foreach(_TEST ${_TESTS})
   add_test(NAME ${_TEST} COMMAND ${Python_EXECUTABLE}

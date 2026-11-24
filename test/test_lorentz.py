@@ -81,6 +81,14 @@ class LorentzTest(unittest.TestCase):
 						self.assertEqual(epsilon[i, j, k, l], -epsilon[i, l, k, j], f"ERROR in {i}, {j}, {k}, {l}")
 						self.assertEqual(epsilon[i, j, k, l], -epsilon[i, j, l, k], f"ERROR in {i}, {j}, {k}, {l}")
 
+		# Sign convention: epsilon is the contravariant tensor eps^{mu nu rho sigma} with eps^{0123} = -1, i.e. eps_{0123} = +1
+		# (Kuehn and Mirkes, Z. Phys. C 56 (1992) 661); levitCivitaSymbol is the permutation symbol with the opposite sign
+		self.assertEqual(epsilon[0, 1, 2, 3], -1.)
+		self.assertEqual(sphysics.lorentz.levitCivitaSymbol[0, 1, 2, 3], 1.)
+		self.assertTrue(np.all(epsilon == -sphysics.lorentz.levitCivitaSymbol))
+		epsilonLower = np.einsum('abgd,a,b,g,d->abgd', epsilon, et, et, et, et)
+		self.assertEqual(epsilonLower[0, 1, 2, 3], 1.)
+
 		contraction = np.einsum('abgd,abgd,a,b,g,d->',
 								epsilon, epsilon, et, et, et, et)
 		self.assertEqual(contraction, -24, "Contraction of epsilon is {0} instead of -24")

@@ -24,8 +24,13 @@ class EventsTau2ThreeChargedPi(eventselection.VariablesBase):
 	'''
 	Events of the reaction :math:`\\tau^{\\mp} \\to \\pi^{\\pm} \\pi^{\\mp} \\pi^{\\mp} \\nu_\\tau`
 
-	pi1MP, pi2PM, pi3PM are ordered according to the reaction given above,
-	i.e. the first two pions have opposite charge and form the isobar system and the second and the last pions are exchanged for the bose symmetrization
+	The pion four-momenta ``pi1PM``, ``pi2MP``, ``pi3MP`` are ordered according to the reaction given above:
+	``pi1PM`` is the pion with the charge opposite to the :math:`\\tau` (:math:`\\pi^+` for :math:`\\tau^-`),
+	``pi2MP`` and ``pi3MP`` are the two pions with the charge of the :math:`\\tau`. The first two pions form the isobar system.
+	``tauMP`` and ``nu`` are the :math:`\\tau` and neutrino four-momenta (empty if unknown),
+	``isParticle`` is True for :math:`\\tau^-` and False for :math:`\\tau^+` decays, and ``tauMP_E`` and ``tauMP_M``
+	are the :math:`\\tau` energy and mass used to reconstruct the :math:`\\tau` momentum up to the angle
+	:math:`\\alpha` around the hadronic momentum.
 	'''
 	def __init__(self, tauMP_E:float=None, tauMP_M:float=None) -> None:
 		super().__init__()
@@ -115,8 +120,6 @@ def variablesReco2Events(sample: eventselection.Variables, prefix: str = '') -> 
 	events.pi3MP = sample[f'{prefix}pi3MP']
 	events.isParticle = sample[f'{prefix}isParticle']
 
-	print(events.nEvents)
-	print(events.pi1PM)
 	events.check()
 	return events
 
@@ -271,22 +274,36 @@ def decomposeHermitianMatrix(mat: np.ndarray) -> np.ndarray:
 	return retVal
 
 
-def decomposeHermitianMatrix2(mat: np.ndarray) -> np.ndarray:
+def decomposeHermitianMatrix2(mat: np.ndarray, relativeTolerance: float = 1e-10) -> np.ndarray:
 	"""
-	Decomposes a hermitian matrix into vectors, such, that
+	Decomposes a positive semi-definite hermitian matrix into vectors, such, that
 	vecs = decompose(mat) => mat = np.einsum("ime,ine->mne", vecs, conjugate(vecs))
-	@param mat np.array of hermitian matrix of shape ((dim, dim, nEvents))
+
+	:param mat: np.array of hermitian matrix of shape ((dim, dim, nEvents))
+	:param relativeTolerance: Negative eigenvalues down to -relativeTolerance times the largest absolute eigenvalue of the same matrix
+	                          are considered as numerical noise and set to zero. Smaller eigenvalues raise an exception.
+	                          The same relative tolerance is used to check that the vectors reproduce the matrix.
+	:raises ValueError: If a matrix has a significantly negative eigenvalue or if the decomposition does not reproduce the matrix
 	"""
 	eigenValue, eigenVector = np.linalg.eigh(np.transpose(mat, (2,0,1)))
 
-	if np.max(np.abs(eigenValue)) < -1e-10:
-		raise Exception("Eigenvalues must be positive")
+	scale = np.max(np.abs(eigenValue), axis=1, keepdims=True)
+	isNegative = eigenValue < -relativeTolerance*scale
+	if np.any(isNegative):
+		relativeEigenValue = eigenValue/np.where(scale > 0., scale, 1.)
+		log.raiseException(ValueError, f"Eigenvalues must be positive, but {np.sum(np.any(isNegative, axis=1))} of {mat.shape[-1]} matrices have "
+		                               f"significantly negative eigenvalues (most negative eigenvalue relative to the largest one: {np.min(relativeEigenValue):.3e})!")
 
-	eigenValue[eigenValue<0] = 0. # set eigenvalues that are negative, but numerically close to zero (see checks above), to zero
+	eigenValue[eigenValue<0] = 0. # set eigenvalues that are negative, but numerically close to zero (see check above), to zero
 
 	eigenVector *= math.sqrt(eigenValue[:,None,:])
+	vecs = math.transpose(eigenVector, (2,1,0))
 
-	return math.transpose(eigenVector, (2,1,0))
+	reconstructed = math.einsum('ime,ine->mne', vecs, math.conjugate(vecs))
+	if np.max(np.abs(reconstructed - mat)) > relativeTolerance*max(np.max(np.abs(mat)), np.finfo(float).tiny):
+		log.raiseException(ValueError, "Vector decomposition of the hermitian matrix did not work!")
+
+	return vecs
 
 
 def calcDecayAmplitudesIntegratedNormIntegrals(model, xPM_M_range, nMCevents, energyCMS=None):
